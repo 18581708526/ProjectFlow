@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzj.student.mapper.StudentMapper">
+
+    <resultMap type="Student" id="StudentResult">
+        <result property="id"    column="id"    />
+        <result property="stuName"    column="stu_name"    />
+        <result property="stuCode"    column="stu_code"    />
+        <result property="sex"    column="sex"    />
+        <result property="stuFile"    column="stu_file"    />
+    </resultMap>
+
+    <sql id="selectStudentVo">
+        select s.id, stu_name, stu_code, sex, f.file_url stu_file from student s left join file_detail f on s.stu_file = f.id
+    </sql>
+
+    <select id="selectStudentList" parameterType="Student" resultMap="StudentResult">
+        <include refid="selectStudentVo"/>
+        <where>
+            <if test="stuName != null  and stuName != ''"> and stu_name like concat('%', #{stuName}, '%')</if>
+            <if test="stuCode != null  and stuCode != ''"> and stu_code = #{stuCode}</if>
+            <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
+        </where>
+    </select>
+
+    <select id="selectStudentById" parameterType="Long" resultMap="StudentResult">
+        <include refid="selectStudentVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertStudent" parameterType="Student" useGeneratedKeys="true" keyProperty="id">
+        insert into student
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stuName != null">stu_name,</if>
+            <if test="stuCode != null">stu_code,</if>
+            <if test="sex != null">sex,</if>
+            <if test="stuFile != null">stu_file,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stuName != null">#{stuName},</if>
+            <if test="stuCode != null">#{stuCode},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="stuFile != null">#{stuFile},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStudent" parameterType="Student">
+        update student
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stuName != null">stu_name = #{stuName},</if>
+            <if test="stuCode != null">stu_code = #{stuCode},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="stuFile != null">stu_file = #{stuFile},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStudentById" parameterType="Long">
+        delete from student where id = #{id}
+    </delete>
+
+    <delete id="deleteStudentByIds" parameterType="String">
+        delete from student where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
