@@ -11,7 +11,7 @@ public class ProjectFlowApplication {
     public static void main(String[] args)
     {
         SpringApplication.run(ProjectFlowApplication.class, args);
-        System.out.println("ProjectFlow启动成功，git");
+        System.out.println("ProjectFlow启动成功");
 
     }
 }
