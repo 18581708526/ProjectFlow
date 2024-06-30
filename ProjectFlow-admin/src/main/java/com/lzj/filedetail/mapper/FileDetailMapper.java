@@ -1,5 +1,6 @@
 package com.lzj.filedetail.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lzj.filedetail.domain.FileDetail;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2024-06-09
  */
-public interface FileDetailMapper
+public interface FileDetailMapper extends BaseMapper<FileDetail>
 {
     /**
      * 查询filedetail

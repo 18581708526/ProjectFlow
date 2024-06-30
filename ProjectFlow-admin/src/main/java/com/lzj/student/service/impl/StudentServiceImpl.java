@@ -53,6 +53,8 @@ public class StudentServiceImpl implements IStudentService
     @Override
     public int insertStudent(Student student)
     {
+        String id = studentMapper.getFileId(student.getStuFile());
+        student.setStuFile(id);
         return studentMapper.insertStudent(student);
     }
 
@@ -65,6 +67,8 @@ public class StudentServiceImpl implements IStudentService
     @Override
     public int updateStudent(Student student)
     {
+        String id = studentMapper.getFileId(student.getStuFile());
+        student.setStuFile(id);
         return studentMapper.updateStudent(student);
     }
 

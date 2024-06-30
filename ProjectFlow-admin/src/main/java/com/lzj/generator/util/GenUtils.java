@@ -14,7 +14,8 @@ import java.util.Arrays;
  *
  * @author ruoyi
  */
-public class GenUtils
+public class
+GenUtils
 {
     /**
      * 初始化表信息

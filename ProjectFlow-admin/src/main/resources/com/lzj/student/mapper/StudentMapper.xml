@@ -13,7 +13,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStudentVo">
-        select s.id, stu_name, stu_code, sex, f.file_url stu_file from student s left join file_detail f on s.stu_file = f.id
+        select s.id, stu_name, stu_code, sex, f.file_url stu_file from student s
+                left join file_detail f on s.stu_file = f.id
     </sql>
 
     <select id="selectStudentList" parameterType="Student" resultMap="StudentResult">
@@ -27,7 +28,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectStudentById" parameterType="Long" resultMap="StudentResult">
         <include refid="selectStudentVo"/>
-        where id = #{id}
+        where s.id = #{id}
     </select>
 
     <insert id="insertStudent" parameterType="Student" useGeneratedKeys="true" keyProperty="id">
@@ -67,4 +68,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="getFileId" resultType="String">
+        select id from file_detail where file_url = #{fileUrl}
+    </select>
 </mapper>

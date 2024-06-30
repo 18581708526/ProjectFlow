@@ -59,4 +59,10 @@ public interface StudentMapper
      * @return 结果
      */
     public int deleteStudentByIds(Long[] ids);
+
+    /**
+     * 获取附件信息
+     */
+    public String getFileId(String url);
+
 }

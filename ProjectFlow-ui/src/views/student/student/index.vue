@@ -89,7 +89,20 @@
           <dict-tag :options="dict.type.sys_user_sex" :value="scope.row.sex"/>
         </template>
       </el-table-column>
-      <el-table-column label="学生附件" align="center" prop="stuFile" />
+<!--      <el-table-column label="学生附件" align="center" prop="stuFile" />-->
+      <el-table-column label="学生头像" align="center">
+        <template slot-scope="scope">
+          <!-- 使用v-if判断fileUrl是否存在，避免因为空字符串或null导致的错误 -->
+          <el-image v-if="scope.row.stuFile" :src="scope.row.stuFile" :preview-src-list="[scope.row.stuFile]" style="width: 100px; height: 100px;">
+            <div slot="error" class="image-slot">
+              文件加载失败
+            </div>
+          </el-image>
+          <span v-else>无图片</span>
+        </template>
+      </el-table-column>
+
+
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -140,9 +153,10 @@
 <!--        <el-form-item label="学生附件" prop="stuFile">
           <file-upload v-model="form.stuFile"/>
         </el-form-item>-->
-        <el-form-item label="学生附件">
+        <el-form-item label="学生头像">
           <el-upload
             ref="upload"
+            :action="xxx"
             :http-request="handleUploadRequest"
             :headers="headers"
             :on-success="handleUploadSuccess"
@@ -150,11 +164,21 @@
             :limit="1"
             accept=""
           >
-            <el-button slot="trigger">选择文件</el-button>
+            <template>
+              <div class="upload-container">
+                <img v-if="previewImage" :src="previewImage" class="avatar" alt="学生头像" style="width: 50% ; height: auto; left: auto">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                <div class="upload-trigger">
+                  <el-button size="small" type="primary">选择文件</el-button>
+                </div>
+              </div>
+            </template>
             <el-button style="margin-left: 10px;" @click="resetFile">重置</el-button>
             <div slot="tip" class="el-upload__tip">只允许上传图片文件。</div>
           </el-upload>
         </el-form-item>
+
+
 
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -168,7 +192,6 @@
 <script>
 import { listStudent, getStudent, delStudent, addStudent, updateStudent } from "@/api/student/student";
 import { addFilefromMinio } from "@/api/minio/minio";
-
 import { ElMessage } from 'element-ui';
 
 export default {
@@ -213,6 +236,8 @@ export default {
         'Authorization': "Bearer " + this.$store.state.user.token,
       },
       file: null,
+      previewImage: '',
+      xxx: '',
     };
   },
   created() {
@@ -220,24 +245,24 @@ export default {
   },
   methods: {
     //文件上传接口方法
-    async handleUploadRequest(option) {
+    handleUploadRequest: async function (option) {
 
       const file = option.file;
 
       try {
         const formData = new FormData();
         formData.append('file', file);
-        await addFilefromMinio(formData);
-        this.handleUploadSuccess( {data: 'success'},file, []);
+        const fileUrl=await addFilefromMinio(formData);
+        this.handleUploadSuccess({data: fileUrl}, file, []);
 
       } catch (error) {
         console.error('上传失败，错误信息:', error);
       }
     },
-/*    handleUploadSuccess(response, file, fileList) {
-
-      console.log(response);
-    },*/
+    handleUploadSuccess(response, file, fileList) {
+      this.form.stuFile = response.data;
+      console.log(response.data);
+    },
     beforeUpload(file) {
       const isImage = file.type.startsWith('');/*image/*/
       if (!isImage) {
@@ -249,12 +274,8 @@ export default {
 
     resetFile() {
       this.$refs.upload.clearFiles();
+      this.previewImage = '';
     },
-
-
-
-
-
 
     /** 查询学生信息列表 */
     getList() {
@@ -309,6 +330,7 @@ export default {
       const id = row.id || this.ids
       getStudent(id).then(response => {
         this.form = response.data;
+        this.previewImage = response.data.stuFile;
         this.open = true;
         this.title = "修改学生信息";
       });
