@@ -1,4 +1,4 @@
-package com.lzj.workflow.domain;
+package com.lzj.workflow.common.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;

@@ -1,7 +1,9 @@
-package com.lzj.workflow.controller;
+package com.lzj.workflow.common.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.lzj.workflow.common.domain.ActReProcdef;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +18,7 @@ import com.lzj.common.annotation.Log;
 import com.lzj.common.core.controller.BaseController;
 import com.lzj.common.core.domain.AjaxResult;
 import com.lzj.common.enums.BusinessType;
-import com.lzj.workflow.domain.ActReProcdef;
-import com.lzj.workflow.service.IActReProcdefService;
+import com.lzj.workflow.common.service.IActReProcdefService;
 import com.lzj.common.utils.poi.ExcelUtil;
 import com.lzj.common.core.page.TableDataInfo;
 

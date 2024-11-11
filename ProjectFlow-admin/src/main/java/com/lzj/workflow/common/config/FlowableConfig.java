@@ -1,4 +1,4 @@
-package com.lzj.workflow.config;
+package com.lzj.workflow.common.config;
 
 import org.flowable.spring.SpringProcessEngineConfiguration;
 import org.flowable.spring.boot.EngineConfigurationConfigurer;

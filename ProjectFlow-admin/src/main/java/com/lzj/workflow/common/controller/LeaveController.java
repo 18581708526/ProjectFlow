@@ -1,21 +1,15 @@
-package com.lzj.workflow.controller;
+package com.lzj.workflow.common.controller;
 
 
 import com.lzj.common.core.domain.AjaxResult;
-import com.lzj.workflow.vo.TaskVO;
+import com.lzj.workflow.common.vo.TaskVO;
 import lombok.extern.slf4j.Slf4j;
-import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.engine.*;
-import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.image.ProcessDiagramGenerator;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 

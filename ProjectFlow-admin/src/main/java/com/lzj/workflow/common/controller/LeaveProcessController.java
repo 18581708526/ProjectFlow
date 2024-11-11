@@ -1,12 +1,11 @@
-package com.lzj.workflow.controller;
+package com.lzj.workflow.common.controller;
 
-import com.alibaba.fastjson2.JSON;
 import com.lzj.common.core.domain.AjaxResult;
 import com.lzj.common.core.domain.entity.SysUser;
 import com.lzj.common.utils.SecurityUtils;
-import com.lzj.workflow.vo.ProcessVo;
-import com.lzj.workflow.vo.QjProcessVo;
-import com.lzj.workflow.vo.TaskVO;
+import com.lzj.workflow.common.vo.ProcessVo;
+import com.lzj.workflow.common.vo.QjProcessVo;
+import com.lzj.workflow.common.vo.TaskVO;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.common.engine.impl.identity.Authentication;
@@ -14,7 +13,6 @@ import org.flowable.engine.*;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
-import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.image.ProcessDiagramGenerator;
@@ -91,6 +89,8 @@ public class LeaveProcessController {
         map.put("userId", userId);
         map.put("fq_user", userId);
         Authentication.setAuthenticatedUserId(userId);
+
+
         // stuLeave为学生请假流程xml文件中的id，bpmn.xml文件的process id="stuLeave"
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(qjProcessVo.getKey(), map);
         runtimeService.setVariables(processInstance.getId(), map);
@@ -99,13 +99,14 @@ public class LeaveProcessController {
         Task task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
         taskService.complete(task.getId());
         //此处id为流程id
+        Authentication.setAuthenticatedUserId(null);
         return success("提交成功.流程Id为：" + processInstance.getId());
     }
 
 
     @GetMapping("teacherList")
     public AjaxResult teacherList() {
-        List<Task> tasks = taskService.createTaskQuery().taskCandidateGroup("jysh").list();
+        List<Task> tasks = taskService.createTaskQuery().taskAssignee("1").list();
 
         List<TaskVO> taskVOList = tasks.stream().map(task -> {
             Map<String, Object> variables = taskService.getVariables(task.getId());

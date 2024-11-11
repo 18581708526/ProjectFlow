@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzj.workflow.myinitprocess.mapper.WfMyinitiprocessMapper">
+
+    <resultMap type="WfMyinitiprocess" id="WfMyinitiprocessResult">
+        <result property="wfWfid"    column="wf_wfid"    />
+        <result property="wfTaskid"    column="wf_taskid"    />
+        <result property="wfWfname"    column="wf_wfname"    />
+        <result property="wfBusinesskey"    column="wf_businesskey"    />
+        <result property="wfStarttime"    column="wf_starttime"    />
+        <result property="wfState"    column="wf_state"    />
+        <result property="wfApprtime"    column="wf_apprtime"    />
+    </resultMap>
+
+    <sql id="selectWfMyinitiprocessVo">
+        select wf_wfid, wf_taskid, wf_wfname, wf_businesskey, wf_starttime, wf_state, wf_apprtime from wf_myinitiprocess
+    </sql>
+
+    <select id="selectWfMyinitiprocessList" parameterType="WfMyinitiprocess" resultMap="WfMyinitiprocessResult">
+        <include refid="selectWfMyinitiprocessVo"/>
+        <where>
+            <if test="wfTaskid != null  and wfTaskid != ''"> and wf_taskid = #{wfTaskid}</if>
+            <if test="wfWfname != null  and wfWfname != ''"> and wf_wfname like concat('%', #{wfWfname}, '%')</if>
+            <if test="wfBusinesskey != null  and wfBusinesskey != ''"> and wf_businesskey = #{wfBusinesskey}</if>
+            <if test="wfStarttime != null "> and wf_starttime = #{wfStarttime}</if>
+            <if test="wfState != null "> and wf_state = #{wfState}</if>
+            <if test="wfApprtime != null "> and wf_apprtime = #{wfApprtime}</if>
+        </where>
+    </select>
+
+    <select id="selectWfMyinitiprocessByWfWfid" parameterType="Long" resultMap="WfMyinitiprocessResult">
+        <include refid="selectWfMyinitiprocessVo"/>
+        where wf_wfid = #{wfWfid}
+    </select>
+
+    <select id="selectWfMyinitiprocessByTaskid" parameterType="String" resultMap="WfMyinitiprocessResult">
+        <include refid="selectWfMyinitiprocessVo"/>
+        where wf_taskid = #{wfTaskid}
+    </select>
+
+
+
+    <insert id="insertWfMyinitiprocess" parameterType="WfMyinitiprocess" useGeneratedKeys="true" keyProperty="wfWfid">
+        insert into wf_myinitiprocess
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="wfTaskid != null and wfTaskid != ''">wf_taskid,</if>
+            <if test="wfWfname != null">wf_wfname,</if>
+            <if test="wfBusinesskey != null">wf_businesskey,</if>
+            <if test="wfStarttime != null">wf_starttime,</if>
+            <if test="wfState != null">wf_state,</if>
+            <if test="wfApprtime != null">wf_apprtime,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="wfTaskid != null and wfTaskid != ''">#{wfTaskid},</if>
+            <if test="wfWfname != null">#{wfWfname},</if>
+            <if test="wfBusinesskey != null">#{wfBusinesskey},</if>
+            <if test="wfStarttime != null">#{wfStarttime},</if>
+            <if test="wfState != null">#{wfState},</if>
+            <if test="wfApprtime != null">#{wfApprtime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWfMyinitiprocess" parameterType="WfMyinitiprocess">
+        update wf_myinitiprocess
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="wfTaskid != null and wfTaskid != ''">wf_taskid = #{wfTaskid},</if>
+            <if test="wfWfname != null">wf_wfname = #{wfWfname},</if>
+            <if test="wfBusinesskey != null">wf_businesskey = #{wfBusinesskey},</if>
+            <if test="wfStarttime != null">wf_starttime = #{wfStarttime},</if>
+            <if test="wfState != null">wf_state = #{wfState},</if>
+            <if test="wfApprtime != null">wf_apprtime = #{wfApprtime},</if>
+        </trim>
+        where wf_wfid = #{wfWfid}
+    </update>
+
+    <delete id="deleteWfMyinitiprocessByWfWfid" parameterType="Long">
+        delete from wf_myinitiprocess where wf_wfid = #{wfWfid}
+    </delete>
+
+    <delete id="deleteWfMyinitiprocessByWfWfids" parameterType="String">
+        delete from wf_myinitiprocess where wf_wfid in
+        <foreach item="wfWfid" collection="array" open="(" separator="," close=")">
+            #{wfWfid}
+        </foreach>
+    </delete>
+</mapper>

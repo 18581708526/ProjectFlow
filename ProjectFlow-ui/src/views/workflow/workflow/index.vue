@@ -131,7 +131,7 @@
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['workflow:workflow:remove']"
-            disabled="true"
+            :disabled="true"
           >删除</el-button>
         </template>
       </el-table-column>

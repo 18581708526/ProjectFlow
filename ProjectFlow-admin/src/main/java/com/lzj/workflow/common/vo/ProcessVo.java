@@ -1,4 +1,4 @@
-package com.lzj.workflow.vo;
+package com.lzj.workflow.common.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

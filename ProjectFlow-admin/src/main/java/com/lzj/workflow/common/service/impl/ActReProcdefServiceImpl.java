@@ -1,11 +1,12 @@
-package com.lzj.workflow.service.impl;
+package com.lzj.workflow.common.service.impl;
 
 import java.util.List;
+
+import com.lzj.workflow.common.domain.ActReProcdef;
+import com.lzj.workflow.common.mapper.ActReProcdefMapper;
+import com.lzj.workflow.common.service.IActReProcdefService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.lzj.workflow.mapper.ActReProcdefMapper;
-import com.lzj.workflow.domain.ActReProcdef;
-import com.lzj.workflow.service.IActReProcdefService;
 
 /**
  * 流程定义Service业务层处理
