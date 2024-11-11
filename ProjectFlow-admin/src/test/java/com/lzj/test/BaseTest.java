@@ -18,6 +18,10 @@ import java.util.stream.Stream;
 public class BaseTest {
     @Autowired
     private FileDetailMapper fileDetailMapper;
+
+
+
+
     @Test
     public void test(){
         List<FileDetail> fileDetails = fileDetailMapper.selectList(null);

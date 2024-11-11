@@ -194,6 +194,8 @@ import { listStudent, getStudent, delStudent, addStudent, updateStudent } from "
 import { addFilefromMinio } from "@/api/minio/minio";
 import { ElMessage } from 'element-ui';
 
+
+
 export default {
   name: "Student",
   dicts: ['sys_user_sex'],

@@ -9,6 +9,7 @@ import com.lzj.common.utils.SecurityUtils;
 import com.lzj.framework.web.service.SysLoginService;
 import com.lzj.framework.web.service.SysPermissionService;
 import com.lzj.system.service.ISysMenuService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,7 @@ import java.util.Set;
  * @author ruoyi
  */
 @RestController
+@Slf4j
 public class SysLoginController
 {
     @Autowired
@@ -48,6 +50,7 @@ public class SysLoginController
         // 生成令牌
         String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
                 loginBody.getUuid());
+        log.info("临时token:"+token);
         ajax.put(Constants.TOKEN, token);
         return ajax;
     }

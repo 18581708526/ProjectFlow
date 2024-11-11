@@ -23,14 +23,27 @@ public class AjaxResult extends HashMap<String, Object>
 
     /** 数据对象 */
     public static final String DATA_TAG = "data";
-
+    private boolean flag;
+    private String msg;
+    private Object data;
     /**
      * 初始化一个新创建的 AjaxResult 对象，使其表示一个空消息。
      */
+    public AjaxResult(boolean flag, String msg, Object data)
+    {
+        this.flag=flag;
+        this.msg=msg;
+        this.data=data;
+    }
+    public AjaxResult(boolean flag, String msg)
+    {
+        this.flag=flag;
+        this.msg=msg;
+
+    }
     public AjaxResult()
     {
     }
-
     /**
      * 初始化一个新创建的 AjaxResult 对象
      *

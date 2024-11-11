@@ -31,6 +31,7 @@ public class MinioServiceImpl implements MinioService {
     /**
      * 上传文件
      * @param  file file
+     * 上传文件到对象存储服务器minio上 :地址：http://192.168.154.128:9000
      * @return String
      */
     @Override
@@ -54,6 +55,7 @@ public class MinioServiceImpl implements MinioService {
                     .object(objectName)
                     .build();
             minioClient.putObject(putObjectArgs);
+            //保存文件明细到数据库
             FileDetail fileDetail= new FileDetail();
             fileDetail.setFileName(originalFilename);
             fileDetail.setFileUrl(FileUrl);

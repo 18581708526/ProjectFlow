@@ -51,6 +51,7 @@ public class FileDetailController extends BaseController
         List<FileDetail> list = fileDetailService.selectFileDetailList(fileDetail);
         ExcelUtil<FileDetail> util = new ExcelUtil<FileDetail>(FileDetail.class);
         util.exportExcel(response, list, "filedetail数据");
+
     }
 
     /**

@@ -34,7 +34,9 @@
         <mybatis-plus.version>3.3.2</mybatis-plus.version>
         <minio.version>8.2.1</minio.version>
         <dynamic.version>3.5.2</dynamic.version>
-        <junit.versiom>5.8.1</junit.versiom>
+        <junit.version>5.8.1</junit.version>
+        <rocketmq.version>2.2.2</rocketmq.version>
+        <flowable.version>6.6.0</flowable.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -179,14 +181,45 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
-                <version>${junit.versiom}</version>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
-
+            <!--RocketMq-->
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-spring-boot-starter</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+            <!--下面俩皆是flowable-ui所需jar包，不用ui画流程图的可不加-->
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-spring-boot-starter-ui-idm</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-spring-boot-starter-ui-modeler</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+            <!--忘了这家伙干啥的了，好像是解决中途的某个报错的，诸位可去掉验证验证-->
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-bpmn-layout</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+    <!--mvn install:install-file -Dfile="C:\Users\LZJ\Downloads\rocketmq-spring-boot-starter-2.2.2.jar" -DgroupId=org.apache.rocketmq -DartifactId=rocketmq-spring-boot-starter -Dversion=2.2.2 -Dpackaging=jar
+    -->
     <modules>
         <module>ProjectFlow-admin</module>
+        <module>FlowableUI</module>
+        <module>FlowableUI</module>
     </modules>
     <packaging>pom</packaging>
 
