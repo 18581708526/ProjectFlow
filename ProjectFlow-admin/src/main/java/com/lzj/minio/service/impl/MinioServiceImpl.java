@@ -12,9 +12,16 @@ import lombok.Cleanup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.InputStream;
 import java.util.UUID;
+
+import javax.net.ssl.*;
+import java.io.IOException;
+import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+
 
 
 @Service
@@ -36,12 +43,14 @@ public class MinioServiceImpl implements MinioService {
      */
     @Override
     public String upload(MultipartFile file) {
+
+
         // 原文件名
         String originalFilename = file.getOriginalFilename();
         // 获取文件的后缀
         String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
         // 构造新的文件名，名字不重复
-        String objectName = UUID.randomUUID().toString() + suffix;
+        String objectName = UUID.randomUUID() + suffix;
         String bucketName = properties.getBucketName();
         String FileUrl=properties.getDomain() + "/" + bucketName + "/" + objectName;
         // 上传文件

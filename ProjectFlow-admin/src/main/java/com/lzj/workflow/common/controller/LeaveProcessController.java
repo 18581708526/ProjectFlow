@@ -6,6 +6,10 @@ import com.lzj.common.utils.SecurityUtils;
 import com.lzj.workflow.common.vo.ProcessVo;
 import com.lzj.workflow.common.vo.QjProcessVo;
 import com.lzj.workflow.common.vo.TaskVO;
+import com.lzj.workflow.myinitprocess.domain.WfMyinitiprocess;
+import com.lzj.workflow.myinitprocess.mapper.WfMyinitiprocessMapper;
+import com.lzj.workflow.mytodoprocess.domain.WfMytodoprocess;
+import com.lzj.workflow.mytodoprocess.mapper.WfMytodoprocessMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.common.engine.impl.identity.Authentication;
@@ -41,7 +45,10 @@ public class LeaveProcessController {
     private RepositoryService repositoryService;
     @Autowired
     private ProcessEngine processEngine;
-
+    @Autowired
+    private WfMyinitiprocessMapper wfMyinitiprocessMapper;
+    @Autowired
+    private WfMytodoprocessMapper wfMytodoprocessMapper;
     /**
      * 部署流程
      * @return
@@ -81,6 +88,7 @@ public class LeaveProcessController {
     public AjaxResult substu(@RequestBody QjProcessVo qjProcessVo) {
         SysUser user = SecurityUtils.getLoginUser().getUser();
         String userId = user.getUserId().toString();
+        String userName = user.getUserName();
         // 学生提交请假申请
         Map<String, Object> map = new HashMap<>();
         map.put("leaveTask", qjProcessVo.getName());
@@ -90,7 +98,6 @@ public class LeaveProcessController {
         map.put("fq_user", userId);
         Authentication.setAuthenticatedUserId(userId);
 
-
         // stuLeave为学生请假流程xml文件中的id，bpmn.xml文件的process id="stuLeave"
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(qjProcessVo.getKey(), map);
         runtimeService.setVariables(processInstance.getId(), map);
@@ -98,6 +105,9 @@ public class LeaveProcessController {
         //完成申请任务
         Task task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
         taskService.complete(task.getId());
+        this.ProMyInitProcess(userId);
+        this.ProMyTodoProcess(userId,userName);
+
         //此处id为流程id
         Authentication.setAuthenticatedUserId(null);
         return success("提交成功.流程Id为：" + processInstance.getId());
@@ -181,7 +191,15 @@ public class LeaveProcessController {
 
     }
 
+/**
+ * 获取流程中变量
+ */
+@GetMapping("getvariable/{taskid}")
+public AjaxResult getVariables(@PathVariable("taskid") String taskid) {
 
+    Map<String, Object> map = taskService.getVariables(taskid);
+    return success("获取成功",map);
+}
     /**
      * 经理批准
      *
@@ -195,11 +213,13 @@ public class LeaveProcessController {
         if (task == null) {
             return success( "没有任务");
         }
-
         //通过审核
         HashMap<String, Object> map = new HashMap<>();
         map.put("checkResult", "通过");
         taskService.complete(task.getId(), map);
+        //TODO 在这儿写审批通过后回写已办数据
+
+
         return success( "审批成功", new TaskVO(task.getId(), task.getName(), task.getDescription()));
     }
 
@@ -389,6 +409,50 @@ public class LeaveProcessController {
             activityIds.addAll(runtimeService.getActiveActivityIds(exe.getId()));
         }
         return activityIds;
+    }
+
+    public void ProMyInitProcess(String userId) {
+        List<ProcessInstance> processInstances = runtimeService.createProcessInstanceQuery()
+                .startedBy(userId)
+                .list();
+        WfMyinitiprocess myinitp = new WfMyinitiprocess();
+        for (ProcessInstance processInstance : processInstances) {
+
+            List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
+            if (tasks.size() > 0) {
+                myinitp.setWfTaskid(tasks.get(0).getId());
+                WfMyinitiprocess wfMyinitiprocess1 = wfMyinitiprocessMapper.selectWfMyinitiprocessByTaskid(tasks.get(0).getId());
+                if(wfMyinitiprocess1 == null){
+                    myinitp.setWfWfname(processInstance.getProcessDefinitionName());
+                    myinitp.setWfStarttime(processInstance.getStartTime());
+                    myinitp.setWfBusinesskey(processInstance.getBusinessKey());
+                    myinitp.setWfState(processInstance.isSuspended() ? 1 : 0);
+                    myinitp.setWfInitor(userId);
+                    wfMyinitiprocessMapper.insertWfMyinitiprocess(myinitp);
+                }
+            }
+        }
+    }
+
+    /**
+     * 对我的待办操作
+     */
+
+    public void ProMyTodoProcess(String userId,String username) {
+        List<Task> tasks=taskService.createTaskQuery().taskAssignee(userId).list();
+
+        for (Task task:tasks){
+            if(wfMytodoprocessMapper.selectWfMytodoprocessByTaskid(task.getId())==null){
+                WfMytodoprocess builder = new WfMytodoprocess();
+                builder.setWfTaskid(task.getId())
+                        .setWfStarttime(task.getCreateTime())
+                        .setWfBussiskey(task.getTaskDefinitionKey())
+                        .setWfInitatorId(Long.parseLong(userId))
+                        .setWfInitatorName(username)
+                        .setWfFwname(task.getName());
+                wfMytodoprocessMapper.insertWfMytodoprocess(builder);
+            }
+        }
     }
 
 }

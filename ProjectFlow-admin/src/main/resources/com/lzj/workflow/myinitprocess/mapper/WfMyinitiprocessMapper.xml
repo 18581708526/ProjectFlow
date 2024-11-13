@@ -51,6 +51,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="wfStarttime != null">wf_starttime,</if>
             <if test="wfState != null">wf_state,</if>
             <if test="wfApprtime != null">wf_apprtime,</if>
+            <if test="wfInitor != null">wf_initor,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="wfTaskid != null and wfTaskid != ''">#{wfTaskid},</if>
@@ -59,6 +60,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="wfStarttime != null">#{wfStarttime},</if>
             <if test="wfState != null">#{wfState},</if>
             <if test="wfApprtime != null">#{wfApprtime},</if>
+            <if test="wfInitor != null">#{wfInitor},</if>
          </trim>
     </insert>
 

@@ -43,6 +43,8 @@ public class WfMyinitiprocess extends BaseEntity
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Excel(name = "审批时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date wfApprtime;
+    @Excel(name = "流程发起人")
+    private String wfInitor;
 
     public void setWfWfid(Long wfWfid)
     {
@@ -108,6 +110,14 @@ public class WfMyinitiprocess extends BaseEntity
         return wfApprtime;
     }
 
+    public String getWfInitor() {
+        return wfInitor;
+    }
+
+    public void setWfInitor(String wfInitor) {
+        this.wfInitor = wfInitor;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -118,6 +128,7 @@ public class WfMyinitiprocess extends BaseEntity
             .append("wfStarttime", getWfStarttime())
             .append("wfState", getWfState())
             .append("wfApprtime", getWfApprtime())
+            .append("wfInitor", getWfInitor())
             .toString();
     }
 }

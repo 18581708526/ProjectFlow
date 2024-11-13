@@ -25,11 +25,6 @@ public class WfMyinitiprocessServiceImpl implements IWfMyinitiprocessService
 {
     @Autowired
     private WfMyinitiprocessMapper wfMyinitiprocessMapper;
-    @Autowired
-    private RuntimeService runtimeService;
-
-    @Autowired
-    private TaskService taskService;
 
     /**
      * 查询我的发起
@@ -52,26 +47,6 @@ public class WfMyinitiprocessServiceImpl implements IWfMyinitiprocessService
     @Override
     public List<WfMyinitiprocess> selectWfMyinitiprocessList(WfMyinitiprocess wfMyinitiprocess)
     {
-        String userId =SecurityUtils.getUserId().toString();
-        List<ProcessInstance> processInstances = runtimeService.createProcessInstanceQuery()
-                .startedBy(userId)
-                .list();
-        WfMyinitiprocess myinitp = new WfMyinitiprocess();
-        for (ProcessInstance processInstance : processInstances) {
-
-            List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
-            if (tasks.size() > 0) {
-                myinitp.setWfTaskid(tasks.get(0).getId());
-                WfMyinitiprocess wfMyinitiprocess1 = wfMyinitiprocessMapper.selectWfMyinitiprocessByTaskid(tasks.get(0).getId());
-                if(wfMyinitiprocess1 == null){
-                    myinitp.setWfWfname(processInstance.getProcessDefinitionName());
-                    myinitp.setWfStarttime(processInstance.getStartTime());
-                    myinitp.setWfBusinesskey(processInstance.getBusinessKey());
-                    myinitp.setWfState(processInstance.isSuspended() ? 1 : 0);
-                    wfMyinitiprocessMapper.insertWfMyinitiprocess(myinitp);
-                }
-            }
-        }
 
         return wfMyinitiprocessMapper.selectWfMyinitiprocessList(wfMyinitiprocess);
     }

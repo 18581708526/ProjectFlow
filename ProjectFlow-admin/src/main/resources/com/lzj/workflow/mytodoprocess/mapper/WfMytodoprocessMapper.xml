@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzj.workflow.mytodoprocess.mapper.WfMytodoprocessMapper">
+
+    <resultMap type="WfMytodoprocess" id="WfMytodoprocessResult">
+        <result property="wfFwid"    column="wf_fwid"    />
+        <result property="wfFwname"    column="wf_fwname"    />
+        <result property="wfInitatorId"    column="wf_initator_id"    />
+        <result property="wfStarttime"    column="wf_starttime"    />
+        <result property="wfTaskid"    column="wf_taskid"    />
+        <result property="wfBussiskey"    column="wf_bussiskey"    />
+        <result property="wfInitatorName"    column="wf_initator_name"    />
+    </resultMap>
+
+    <sql id="selectWfMytodoprocessVo">
+        select wf_fwid, wf_fwname, wf_initator_id, wf_starttime, wf_taskid, wf_bussiskey, wf_initator_name from wf_mytodoprocess
+    </sql>
+
+    <select id="selectWfMytodoprocessList" parameterType="WfMytodoprocess" resultMap="WfMytodoprocessResult">
+        <include refid="selectWfMytodoprocessVo"/>
+        <where>
+            <if test="wfFwname != null  and wfFwname != ''"> and wf_fwname like concat('%', #{wfFwname}, '%')</if>
+            <if test="wfStarttime != null "> and wf_starttime = #{wfStarttime}</if>
+            <if test="wfInitatorName != null  and wfInitatorName != ''"> and wf_initator_name like concat('%', #{wfInitatorName}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectWfMytodoprocessByWfFwid" parameterType="Long" resultMap="WfMytodoprocessResult">
+        <include refid="selectWfMytodoprocessVo"/>
+        where wf_fwid = #{wfFwid}
+    </select>
+    <select id="selectWfMytodoprocessByTaskid" parameterType="String" resultMap="WfMytodoprocessResult">
+        <include refid="selectWfMytodoprocessVo"/>
+        where wf_taskid = #{wfTaskid}
+    </select>
+
+
+
+    <insert id="insertWfMytodoprocess" parameterType="WfMytodoprocess" useGeneratedKeys="true" keyProperty="wfFwid">
+        insert into wf_mytodoprocess
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="wfFwname != null">wf_fwname,</if>
+            <if test="wfInitatorId != null">wf_initator_id,</if>
+            <if test="wfStarttime != null">wf_starttime,</if>
+            <if test="wfTaskid != null">wf_taskid,</if>
+            <if test="wfBussiskey != null">wf_bussiskey,</if>
+            <if test="wfInitatorName != null">wf_initator_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="wfFwname != null">#{wfFwname},</if>
+            <if test="wfInitatorId != null">#{wfInitatorId},</if>
+            <if test="wfStarttime != null">#{wfStarttime},</if>
+            <if test="wfTaskid != null">#{wfTaskid},</if>
+            <if test="wfBussiskey != null">#{wfBussiskey},</if>
+            <if test="wfInitatorName != null">#{wfInitatorName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWfMytodoprocess" parameterType="WfMytodoprocess">
+        update wf_mytodoprocess
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="wfFwname != null">wf_fwname = #{wfFwname},</if>
+            <if test="wfInitatorId != null">wf_initator_id = #{wfInitatorId},</if>
+            <if test="wfStarttime != null">wf_starttime = #{wfStarttime},</if>
+            <if test="wfTaskid != null">wf_taskid = #{wfTaskid},</if>
+            <if test="wfBussiskey != null">wf_bussiskey = #{wfBussiskey},</if>
+            <if test="wfInitatorName != null">wf_initator_name = #{wfInitatorName},</if>
+        </trim>
+        where wf_fwid = #{wfFwid}
+    </update>
+
+    <delete id="deleteWfMytodoprocessByWfFwid" parameterType="Long">
+        delete from wf_mytodoprocess where wf_fwid = #{wfFwid}
+    </delete>
+
+    <delete id="deleteWfMytodoprocessByWfFwids" parameterType="String">
+        delete from wf_mytodoprocess where wf_fwid in
+        <foreach item="wfFwid" collection="array" open="(" separator="," close=")">
+            #{wfFwid}
+        </foreach>
+    </delete>
+</mapper>

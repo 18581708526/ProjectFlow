@@ -4,8 +4,6 @@ package com.lzj.workflow.common.controller;
 import com.lzj.workflow.common.vo.ProcessInstanceVO;
 import com.lzj.workflow.common.vo.QjProcessVo;
 import com.lzj.workflow.common.vo.TaskVO;
-import com.lzj.workflow.myinitprocess.domain.WfMyinitiprocess;
-import com.lzj.workflow.myinitprocess.service.IWfMyinitiprocessService;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
@@ -36,8 +34,7 @@ public class ProcessController {
 
     @Autowired
     private HistoryService historyService;
-    @Autowired
-    private IWfMyinitiprocessService wfMyinitiprocessService;
+
     @GetMapping("/my-initiated")
     public List<ProcessInstanceVO> getMyInitiatedProcesses(@RequestParam String userId) {
 

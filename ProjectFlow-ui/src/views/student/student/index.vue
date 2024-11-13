@@ -150,9 +150,9 @@
             ></el-option>
           </el-select>
         </el-form-item>
-<!--        <el-form-item label="学生附件" prop="stuFile">
-          <file-upload v-model="form.stuFile"/>
-        </el-form-item>-->
+<!--        <el-form-item label="学生附件" prop="stuFile">-->
+<!--          <file-upload v-model="form.stuFile"/>-->
+<!--        </el-form-item>-->
         <el-form-item label="学生头像">
           <el-upload
             ref="upload"
@@ -160,6 +160,7 @@
             :http-request="handleUploadRequest"
             :headers="headers"
             :on-success="handleUploadSuccess"
+            :on-progress="handleProgress"
             :before-upload="beforeUpload"
             :limit="1"
             accept=""
@@ -176,6 +177,7 @@
             <el-button style="margin-left: 10px;" @click="resetFile">重置</el-button>
             <div slot="tip" class="el-upload__tip">只允许上传图片文件。</div>
           </el-upload>
+          <el-progress :percentage="uploadPercentage" v-if="uploading"></el-progress>
         </el-form-item>
 
 
@@ -240,6 +242,8 @@ export default {
       file: null,
       previewImage: '',
       xxx: '',
+      uploadPercentage: 0,  // 上传进度
+      uploading: false  // 是否正在上传
     };
   },
   created() {
@@ -248,22 +252,37 @@ export default {
   methods: {
     //文件上传接口方法
     handleUploadRequest: async function (option) {
-
+      this.uploading=true;
       const file = option.file;
 
       try {
         const formData = new FormData();
         formData.append('file', file);
-        const fileUrl=await addFilefromMinio(formData);
+        // const =await addFilefromMinio(formData);
+
+        // 使用 option.onProgress 来更新进度
+        const fileUrl = await addFilefromMinio(formData, (event) => {
+          option.onProgress({
+            percent: Math.round((event.loaded / event.total) * 100)
+          });
+        });
+
         this.handleUploadSuccess({data: fileUrl}, file, []);
 
       } catch (error) {
         console.error('上传失败，错误信息:', error);
+      }finally {
+        this.uploading=false;
       }
     },
     handleUploadSuccess(response, file, fileList) {
-      this.form.stuFile = response.data;
-      console.log(response.data);
+      console.log('Response:', response);
+      if (response && response.data) {
+        this.form.stuFile = response.data;
+        this.previewImage = response.data;
+      } else {
+        console.error('Response data is undefined');
+      }
     },
     beforeUpload(file) {
       const isImage = file.type.startsWith('');/*image/*/
@@ -273,10 +292,15 @@ export default {
       }
       return true;
     },
-
+    handleProgress(event, file, fileList) {
+      this.uploadPercentage = event.percent;
+    },
     resetFile() {
       this.$refs.upload.clearFiles();
-      this.previewImage = '';
+      this.previewImage = null;  // 重置预览图片
+      this.form.stuFile = '';  // 重置表单字段
+      this.uploadPercentage = 0;  // 重置上传进度
+      this.uploading = false;  // 重置上传状态
     },
 
     /** 查询学生信息列表 */
@@ -325,6 +349,7 @@ export default {
       this.reset();
       this.open = true;
       this.title = "添加学生信息";
+      this.resetFile();
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -376,3 +401,4 @@ export default {
   }
 };
 </script>
+
