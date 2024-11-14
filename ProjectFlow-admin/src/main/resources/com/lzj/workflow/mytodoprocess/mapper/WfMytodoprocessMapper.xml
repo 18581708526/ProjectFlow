@@ -24,6 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="wfFwname != null  and wfFwname != ''"> and wf_fwname like concat('%', #{wfFwname}, '%')</if>
             <if test="wfStarttime != null "> and wf_starttime = #{wfStarttime}</if>
             <if test="wfInitatorName != null  and wfInitatorName != ''"> and wf_initator_name like concat('%', #{wfInitatorName}, '%')</if>
+            wf_state is null
         </where>
     </select>
 
@@ -69,6 +70,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="wfInitatorName != null">wf_initator_name = #{wfInitatorName},</if>
         </trim>
         where wf_fwid = #{wfFwid}
+    </update>
+    <!--审批通过后回写流程审批状态-->
+    <update id="updateWfdodeProess">
+        update wf_mytodoprocess
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="wfState != null">wf_state = 1,</if>
+        </trim>
+        where wf_taskid = #{wfTaskid}
     </update>
 
     <delete id="deleteWfMytodoprocessByWfFwid" parameterType="Long">

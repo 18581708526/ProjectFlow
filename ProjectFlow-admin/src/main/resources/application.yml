@@ -12,7 +12,8 @@ lzj:
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证
   captchaType: math
-
+  #服务器ip，许多环境都是在这上面 minio，mysql，redis 本地虚拟环境ip:  192.168.154.128
+  ip: 120.26.56.61
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
@@ -91,7 +92,7 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: 192.168.154.128
+    host: ${lzj.ip}
     # 端口，默认为6379
     port: 6379
     # 数据库索引
@@ -159,7 +160,7 @@ xss:
 # oss对象存储配置
 minio:
   # 访问地址
-  endpoint: http://192.168.154.128:9000
+  endpoint: http://${lzj.ip}:9000
   # 用户名
   accessKey: admin
   # 密码
@@ -167,6 +168,4 @@ minio:
   # 存储桶名称
   bucketName: 2024
   # 访问域名
-  domain: http://192.168.154.128:9000
-#本地环境ip：192.168.154.128
-#远程云服务器ip: 113.44.138.123
+  domain: http://${lzj.ip}:9000

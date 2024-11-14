@@ -42,6 +42,8 @@ public interface WfMytodoprocessMapper
      * @return 结果
      */
     public int updateWfMytodoprocess(WfMytodoprocess wfMytodoprocess);
+    public void updateWfdodeProess(String taskid);
+
 
     /**
      * 删除我的待办

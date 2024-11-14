@@ -136,17 +136,36 @@
         <el-form-item label="请假原因" prop="reason">
           <span>{{ processVersion.reason }}</span>
         </el-form-item>
+        <el-form-item hidden="hidden" label="taskid（隐藏字段）" prop="wfTaskid">
+          <span>{{ processVersion.wfTaskid }}</span>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button type="success" @click="ProcessForm">通 过</el-button>
+        <el-button type="danger" @click="rejectForm">驳 回</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+
+    <el-dialog :title="rejecttitle" :visible.sync="rejectopen" width="500px" append-to-body>
+      <el-form ref="processVersion" :model="processVersion" label-width="80px">
+        <el-form-item label="驳回原因" prop="leaveTask">
+          <el-input v-model="processVersion.rejectReason" placeholder="请输入驳回原因" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="danger" @click="rejectSubm">确定驳回</el-button>
+        <el-button @click="rejectcancel">取 消</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
-import { listMytodoprocess, getMytodoprocess, delMytodoprocess, addMytodoprocess, updateMytodoprocess ,getProcessVaryies} from "@/api/mytodoprocess/mytodoprocess";
+import { listMytodoprocess, getMytodoprocess, delMytodoprocess, Provedprocess,getProcessVaryies} from "@/api/mytodoprocess/mytodoprocess";
 
 export default {
   name: "Mytodoprocess",
@@ -168,8 +187,10 @@ export default {
       mytodoprocessList: [],
       // 弹出层标题
       title: "",
+      rejecttitle:"",
       // 是否显示弹出层
       open: false,
+      rejectopen:false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -186,7 +207,9 @@ export default {
       processVersion:{
         day:null,
         reason:null,
-        leaveTask:null
+        leaveTask:null,
+        rejectReason:null,
+        wfTaskid:null
       }
     };
   },
@@ -207,6 +230,9 @@ export default {
     cancel() {
       this.open = false;
       this.reset();
+    },
+    rejectcancel(){
+      this.rejectopen=false;
     },
     // 表单重置
     reset() {
@@ -258,9 +284,7 @@ export default {
     handProcess(row){
       getProcessVaryies(row.wfTaskid).then(response=>{
         this.processVersion=response.data;
-        console.log(this.processVersion);
-        console.log(this.processVersion.fq_user);
-        console.log(this.processVersion.leaveTask);
+        this.processVersion.wfTaskid=row.wfTaskid;
         this.open=true;
         this.title = "流程审批";
       })
@@ -272,24 +296,21 @@ export default {
 
 
     /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.wfFwid != null) {
-            updateMytodoprocess(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addMytodoprocess(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
+    ProcessForm() {
+        Provedprocess(this.processVersion.wfTaskid).then(response => {
+          this.$modal.msgSuccess("审批成功");
+          this.open = false;
+          this.getList();
+        });
+    },
+    /**驳回按钮，需要输入驳回原因*/
+    rejectForm(){
+      this.rejectopen=true;
+      this.rejecttitle = "请填写驳回原因";
+    },
+    /**确认驳回操作*/
+    rejectSubm(){
+      console.log(this.processVersion.wfTaskid);
     },
     /** 删除按钮操作 */
     handleDelete(row) {

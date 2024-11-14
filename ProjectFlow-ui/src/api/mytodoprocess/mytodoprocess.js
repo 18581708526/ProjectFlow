@@ -51,3 +51,9 @@ export function getProcessVaryies(wfTaskid) {
 }
 
 
+export function Provedprocess(wfTaskid) {
+  return request({
+    url: '/leaveProcess/teacherApply/' + wfTaskid,
+    method: 'get'
+  })
+}

@@ -77,6 +77,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where wf_wfid = #{wfWfid}
     </update>
 
+    <!--审批通过后回写流程审批状态-->
+    <update id="updateWfdodeProess">
+        update wf_myinitiprocess
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="wfState != null">wf_state = 1,</if>
+        </trim>
+        where wf_taskid = #{wfTaskid}
+    </update>
+
+
     <delete id="deleteWfMyinitiprocessByWfWfid" parameterType="Long">
         delete from wf_myinitiprocess where wf_wfid = #{wfWfid}
     </delete>

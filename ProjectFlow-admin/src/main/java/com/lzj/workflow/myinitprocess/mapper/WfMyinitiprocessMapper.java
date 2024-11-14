@@ -42,6 +42,7 @@ public interface WfMyinitiprocessMapper
      * @return 结果
      */
     public int updateWfMyinitiprocess(WfMyinitiprocess wfMyinitiprocess);
+    public void updateWfdodeProess(String Taskid);
 
     /**
      * 删除我的发起

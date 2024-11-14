@@ -191,24 +191,23 @@ public class LeaveProcessController {
 
     }
 
-/**
- * 获取流程中变量
- */
-@GetMapping("getvariable/{taskid}")
-public AjaxResult getVariables(@PathVariable("taskid") String taskid) {
-
-    Map<String, Object> map = taskService.getVariables(taskid);
-    return success("获取成功",map);
-}
+    /**
+     * 获取流程中变量
+     */
+    @GetMapping("getvariable/{taskid}")
+    public AjaxResult getVariables(@PathVariable("taskid") String taskid) {
+        Map<String, Object> map = taskService.getVariables(taskid);
+        return success("获取成功",map);
+    }
     /**
      * 经理批准
-     *
-     * @param taskId 任务ID，非流程id
+     * @param taskId
      */
-    @GetMapping("teacherApply/{userId}/{taskId}")
-    public AjaxResult teacherApply(@PathVariable("userId") String userId,@PathVariable("taskId") String taskId) {
+    @GetMapping("teacherApply/{taskId}")
+    public AjaxResult teacherApply(@PathVariable("taskId") String taskId) {
 
         //Task task = taskService.createTaskQuery().taskCandidateGroup("jysh").taskId(taskId).singleResult();
+        String userId = SecurityUtils.getUserId().toString();
         Task task = taskService.createTaskQuery().taskCandidateOrAssigned(userId).taskId(taskId).singleResult();
         if (task == null) {
             return success( "没有任务");
@@ -217,8 +216,9 @@ public AjaxResult getVariables(@PathVariable("taskid") String taskid) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("checkResult", "通过");
         taskService.complete(task.getId(), map);
-        //TODO 在这儿写审批通过后回写已办数据
-
+        // 在这儿写审批通过后回写已办数据
+        wfMytodoprocessMapper.updateWfdodeProess(taskId);
+        wfMyinitiprocessMapper.updateWfdodeProess(taskId);
 
         return success( "审批成功", new TaskVO(task.getId(), task.getName(), task.getDescription()));
     }
