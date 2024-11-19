@@ -2,6 +2,8 @@ package com.lzj.workflow.common.vo;
 
 import lombok.*;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

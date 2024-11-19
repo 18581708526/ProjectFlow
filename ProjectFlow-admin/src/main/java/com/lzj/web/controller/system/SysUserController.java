@@ -1,5 +1,6 @@
 package com.lzj.web.controller.system;
 
+import com.google.common.base.Supplier;
 import com.lzj.common.annotation.Log;
 import com.lzj.common.core.controller.BaseController;
 import com.lzj.common.core.domain.AjaxResult;
@@ -11,10 +12,10 @@ import com.lzj.common.enums.BusinessType;
 import com.lzj.common.utils.SecurityUtils;
 import com.lzj.common.utils.StringUtils;
 import com.lzj.common.utils.poi.ExcelUtil;
-import com.lzj.system.service.ISysDeptService;
-import com.lzj.system.service.ISysPostService;
-import com.lzj.system.service.ISysRoleService;
-import com.lzj.system.service.ISysUserService;
+import com.lzj.system.domain.dto.MathDeptAndSysuserDto;
+import com.lzj.system.mapper.MathDeptAndSysuserMapper;
+import com.lzj.system.service.*;
+import com.lzj.web.vo.SysUserVo;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,8 +24,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import static com.lzj.common.core.domain.AjaxResult.success;
 
 /**
  * 用户信息
@@ -46,7 +51,8 @@ public class SysUserController extends BaseController
 
     @Autowired
     private ISysPostService postService;
-
+    @Autowired
+    private IMathDeptAndSysuserService imageDeptAndSysuserService;
     /**
      * 获取用户列表
      */
@@ -57,6 +63,17 @@ public class SysUserController extends BaseController
         startPage();
         List<SysUser> list = userService.selectUserList(user);
         return getDataTable(list);
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:user:list')")
+    @GetMapping("/listtoSersch")
+    public TableDataInfo listtoSersch(SysUser user) {
+
+        List<SysUser> list = userService.selectUserList(user);
+        List<SysUserVo> collect = list.stream().map(sysuser -> {
+            return new SysUserVo(sysuser.getUserId().toString(), sysuser.getNickName(), sysuser.getDept().getDeptName());
+        }).collect(Collectors.toList());
+        return getDataTable(collect);
     }
 
     @Log(title = "用户管理", businessType = BusinessType.EXPORT)
@@ -78,6 +95,9 @@ public class SysUserController extends BaseController
         List<SysUser> userList = util.importExcel(file.getInputStream());
         String operName = getUsername();
         String message = userService.importUser(userList, updateSupport, operName);
+        List<String> stream = userList.stream().map(s
+                -> s.getUserName()).collect(Collectors.toList());
+        userService.syncUserstoFlowableuI(stream);
         return success(message);
     }
 
@@ -132,6 +152,7 @@ public class SysUserController extends BaseController
         }
         user.setCreateBy(getUsername());
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
+        userService.syncUsertoFlowableuI(user.getUserName());
         return toAjax(userService.insertUser(user));
     }
 
@@ -237,9 +258,23 @@ public class SysUserController extends BaseController
      * 获取部门树列表
      */
     @PreAuthorize("@ss.hasPermi('system:user:list')")
-    @GetMapping("/deptTree")
+    @GetMapping("/deptTree")//deptAndUserSum
     public AjaxResult deptTree(SysDept dept)
     {
         return success(deptService.selectDeptTreeList(dept));
     }
+    /**
+     * 查询部门下的所有员工，层级数据
+     * 1.先查询出各部门员工数量和部门id和部门上级的id信息，类似“0,200”，这是每个部门下的员工数量
+     * 2.然后再遍历部门id，如果本次部门id存在部门id中，说明员工数量应该加上去，反之则不用加
+     */
+    @PreAuthorize("@ss.hasPermi('makenum:makenum:list')")
+    @GetMapping("/deptAndUserSum")
+    public AjaxResult deptAndUserSum()
+    {
+        List<MathDeptAndSysuserDto> mathDeptAndSysuserDtos = imageDeptAndSysuserService.mathDeptUserSum();
+        return AjaxResult.success("查询成功",mathDeptAndSysuserDtos);
+    }
 }
+
+

@@ -44,6 +44,7 @@ public class WfMytodoprocessController extends BaseController
     public TableDataInfo list(WfMytodoprocess wfMytodoprocess)
     {
         startPage();
+        wfMytodoprocess.setWfApproverId(SecurityUtils.getUserId().toString());
         List<WfMytodoprocess> list = wfMytodoprocessService.selectWfMytodoprocessList(wfMytodoprocess);
         return getDataTable(list);
     }

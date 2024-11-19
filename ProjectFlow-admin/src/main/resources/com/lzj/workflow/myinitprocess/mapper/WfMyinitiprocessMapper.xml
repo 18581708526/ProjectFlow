@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lzj.workflow.myinitprocess.mapper.WfMyinitiprocessMapper">
 
-    <resultMap type="WfMyinitiprocess" id="WfMyinitiprocessResult">
+    <resultMap type="com.lzj.workflow.myinitprocess.domain.WfMyinitiprocess" id="WfMyinitiprocessResult">
         <result property="wfWfid"    column="wf_wfid"    />
         <result property="wfTaskid"    column="wf_taskid"    />
         <result property="wfWfname"    column="wf_wfname"    />
@@ -13,16 +13,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="wfState"    column="wf_state"    />
         <result property="wfApprtime"    column="wf_apprtime"    />
         <result property="wfRejectrs"    column="wf_rejectrs"    />
+        <result property="wfInitor"    column="wf_initor"    />
+
     </resultMap>
 
     <sql id="selectWfMyinitiprocessVo">
-        select wf_wfid, wf_taskid, wf_wfname, wf_businesskey, wf_starttime, wf_state, wf_apprtime,wf_rejectrs from wf_myinitiprocess
+        select wf_wfid, wf_taskid, wf_wfname, wf_businesskey, wf_starttime, wf_state, wf_apprtime,wf_initor,wf_rejectrs from wf_myinitiprocess
     </sql>
     <sql id="selectRejectprocessVo">
         select wf_rejectrs from wf_myinitiprocess
     </sql>
 
-    <select id="selectWfMyinitiprocessList" parameterType="WfMyinitiprocess" resultMap="WfMyinitiprocessResult">
+    <select id="selectWfMyinitiprocessList" parameterType="com.lzj.workflow.myinitprocess.domain.WfMyinitiprocess" resultMap="WfMyinitiprocessResult">
         <include refid="selectWfMyinitiprocessVo"/>
         <where>
             <if test="wfTaskid != null  and wfTaskid != ''"> and wf_taskid = #{wfTaskid}</if>
@@ -31,6 +33,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="wfStarttime != null "> and wf_starttime = #{wfStarttime}</if>
             <if test="wfState != null "> and wf_state = #{wfState}</if>
             <if test="wfApprtime != null "> and wf_apprtime = #{wfApprtime}</if>
+            <if test="wfInitor != null "> and wf_initor = #{wfInitor}</if>
         </where>
     </select>
 
@@ -49,7 +52,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where wf_taskid = #{wfTaskid}
     </select>
 
-    <insert id="insertWfMyinitiprocess" parameterType="WfMyinitiprocess" useGeneratedKeys="true" keyProperty="wfWfid">
+    <insert id="insertWfMyinitiprocess" parameterType="com.lzj.workflow.myinitprocess.domain.WfMyinitiprocess" useGeneratedKeys="true" keyProperty="wfWfid">
         insert into wf_myinitiprocess
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="wfTaskid != null and wfTaskid != ''">wf_taskid,</if>

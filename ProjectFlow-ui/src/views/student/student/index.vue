@@ -276,7 +276,6 @@ export default {
       }
     },
     handleUploadSuccess(response, file, fileList) {
-      console.log('Response:', response);
       if (response && response.data) {
         this.form.stuFile = response.data;
         this.previewImage = response.data;

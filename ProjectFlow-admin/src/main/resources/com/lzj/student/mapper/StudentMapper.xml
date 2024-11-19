@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lzj.student.mapper.StudentMapper">
 
-    <resultMap type="Student" id="StudentResult">
+    <resultMap type="com.lzj.student.domain.Student" id="StudentResult">
         <result property="id"    column="id"    />
         <result property="stuName"    column="stu_name"    />
         <result property="stuCode"    column="stu_code"    />
@@ -17,7 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 left join file_detail f on s.stu_file = f.id
     </sql>
 
-    <select id="selectStudentList" parameterType="Student" resultMap="StudentResult">
+    <select id="selectStudentList" parameterType="com.lzj.student.domain.Student" resultMap="StudentResult">
         <include refid="selectStudentVo"/>
         <where>
             <if test="stuName != null  and stuName != ''"> and stu_name like concat('%', #{stuName}, '%')</if>
@@ -31,7 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where s.id = #{id}
     </select>
 
-    <insert id="insertStudent" parameterType="Student" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertStudent" parameterType="com.lzj.student.domain.Student" useGeneratedKeys="true" keyProperty="id">
         insert into student
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="stuName != null">stu_name,</if>
@@ -47,7 +47,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateStudent" parameterType="Student">
+    <update id="updateStudent" parameterType="com.lzj.student.domain.Student">
         update student
         <trim prefix="SET" suffixOverrides=",">
             <if test="stuName != null">stu_name = #{stuName},</if>

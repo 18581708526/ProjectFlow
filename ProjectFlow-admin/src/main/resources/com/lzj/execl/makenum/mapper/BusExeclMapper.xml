@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzj.execl.makenum.mapper.BusExeclMapper">
+
+    <resultMap type="com.lzj.execl.makenum.domain.BusExecl" id="BusExeclResult">
+        <result property="id"    column="id"    />
+        <result property="busName"    column="bus_name"    />
+        <result property="sheetNumber"    column="sheet_number"    />
+        <result property="rowName"    column="row_name"    />
+        <result property="colName"    column="col_name"    />
+    </resultMap>
+
+    <sql id="selectBusExeclVo">
+        select id, bus_name, sheet_number, row_name, col_name from bus_execl
+    </sql>
+
+    <select id="selectBusExeclList" parameterType="com.lzj.execl.makenum.domain.BusExecl" resultMap="BusExeclResult">
+        <include refid="selectBusExeclVo"/>
+        <where>
+            <if test="busName != null  and busName != ''"> and bus_name like concat('%', #{busName}, '%')</if>
+            <if test="sheetNumber != null "> and sheet_number = #{sheetNumber}</if>
+            <if test="rowName != null  and rowName != ''"> and row_name like concat('%', #{rowName}, '%')</if>
+            <if test="colName != null  and colName != ''"> and col_name like concat('%', #{colName}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectBusExeclById" parameterType="Long" resultMap="BusExeclResult">
+        <include refid="selectBusExeclVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBusExecl" parameterType="com.lzj.execl.makenum.domain.BusExecl" useGeneratedKeys="true" keyProperty="id">
+        insert into bus_execl
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="busName != null">bus_name,</if>
+            <if test="sheetNumber != null">sheet_number,</if>
+            <if test="rowName != null">row_name,</if>
+            <if test="colName != null">col_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="busName != null">#{busName},</if>
+            <if test="sheetNumber != null">#{sheetNumber},</if>
+            <if test="rowName != null">#{rowName},</if>
+            <if test="colName != null">#{colName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusExecl" parameterType="com.lzj.execl.makenum.domain.BusExecl">
+        update bus_execl
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="busName != null">bus_name = #{busName},</if>
+            <if test="sheetNumber != null">sheet_number = #{sheetNumber},</if>
+            <if test="rowName != null">row_name = #{rowName},</if>
+            <if test="colName != null">col_name = #{colName},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBusExeclById" parameterType="Long">
+        delete from bus_execl where id = #{id}
+    </delete>
+
+    <delete id="deleteBusExeclByIds" parameterType="String">
+        delete from bus_execl where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

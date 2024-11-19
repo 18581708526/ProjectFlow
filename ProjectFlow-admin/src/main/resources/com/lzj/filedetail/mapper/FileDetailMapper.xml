@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lzj.filedetail.mapper.FileDetailMapper">
 
-    <resultMap type="FileDetail" id="FileDetailResult">
+    <resultMap type="com.lzj.filedetail.domain.FileDetail" id="FileDetailResult">
         <result property="id"    column="id"    />
         <result property="fileName"    column="file_name"    />
         <result property="fileUrl"    column="file_url"    />
@@ -14,7 +14,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select id, file_name, file_url from file_detail
     </sql>
 
-    <select id="selectFileDetailList" parameterType="FileDetail" resultMap="FileDetailResult">
+    <select id="selectFileDetailList" parameterType="com.lzj.filedetail.domain.FileDetail" resultMap="FileDetailResult">
         <include refid="selectFileDetailVo"/>
         <where>
             <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
@@ -26,7 +26,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
 
-    <insert id="insertFileDetail" parameterType="FileDetail">
+    <insert id="insertFileDetail" parameterType="com.lzj.filedetail.domain.FileDetail">
         insert into file_detail
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
@@ -40,7 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateFileDetail" parameterType="FileDetail">
+    <update id="updateFileDetail" parameterType="com.lzj.filedetail.domain.FileDetail">
         update file_detail
         <trim prefix="SET" suffixOverrides=",">
             <if test="fileName != null">file_name = #{fileName},</if>

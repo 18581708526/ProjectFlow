@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lzj.workflow.common.mapper.ActReProcdefMapper">
 
-    <resultMap type="ActReProcdef" id="ActReProcdefResult">
+    <resultMap type="com.lzj.workflow.common.domain.ActReProcdef" id="ActReProcdefResult">
         <result property="id"    column="ID_"    />
         <result property="rev"    column="REV_"    />
         <result property="category"    column="CATEGORY_"    />
@@ -29,13 +29,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select ID_, REV_, CATEGORY_, NAME_, KEY_, VERSION_, DEPLOYMENT_ID_, RESOURCE_NAME_, DGRM_RESOURCE_NAME_, DESCRIPTION_, HAS_START_FORM_KEY_, HAS_GRAPHICAL_NOTATION_, SUSPENSION_STATE_, TENANT_ID_, ENGINE_VERSION_, DERIVED_FROM_, DERIVED_FROM_ROOT_, DERIVED_VERSION_ from act_re_procdef
     </sql>
 
-    <select id="selectActReProcdefList" parameterType="ActReProcdef" resultMap="ActReProcdefResult">
+    <select id="selectActReProcdefList" parameterType="com.lzj.workflow.common.domain.ActReProcdef" resultMap="ActReProcdefResult">
         <include refid="selectActReProcdefVo"/>
         <where>
             <if test="rev != null "> and REV_ = #{rev}</if>
             <if test="category != null  and category != ''"> and CATEGORY_ = #{category}</if>
-            <if test="name != null  and name != ''"> and NAME_ = #{name}</if>
-            <if test="key != null  and key != ''"> and KEY_ = #{key}</if>
+            <if test="name != null  and name != ''"> and NAME_ like concat('%', #{name}, '%')</if>
+            <if test="key != null  and key != ''"> and KEY_ like concat('%', #{key}, '%') </if>
             <if test="version != null "> and VERSION_ = #{version}</if>
             <if test="deploymentId != null  and deploymentId != ''"> and DEPLOYMENT_ID_ = #{deploymentId}</if>
             <if test="resourceName != null  and resourceName != ''"> and RESOURCE_NAME_ = #{resourceName}</if>
@@ -57,7 +57,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where ID_ = #{id}
     </select>
 
-    <insert id="insertActReProcdef" parameterType="ActReProcdef">
+    <insert id="insertActReProcdef" parameterType="com.lzj.workflow.common.domain.ActReProcdef">
         insert into act_re_procdef
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">ID_,</if>
@@ -101,7 +101,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateActReProcdef" parameterType="ActReProcdef">
+    <update id="updateActReProcdef" parameterType="com.lzj.workflow.common.domain.ActReProcdef">
         update act_re_procdef
         <trim prefix="SET" suffixOverrides=",">
             <if test="rev != null">REV_ = #{rev},</if>
@@ -135,4 +135,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+<!--    public QueryProcessModel (String modeId);-->
+
+
+    <resultMap type="com.lzj.workflow.common.vo.QueryProcessModel" id="QueryProcessModelResult">
+        <result property="modelName"    column="name"    />
+        <result property="modelKey"    column="model_key"    />
+    </resultMap>
+    <sql id="QueryProcessModelVo">
+        select name, model_key from act_de_model
+    </sql>
+
+    <select id="queryProcessModel" parameterType="String" resultMap="QueryProcessModelResult">
+        <include refid="QueryProcessModelVo"/>
+        <where>
+        <if test="modeId != null "> and id = #{modeId}</if>
+        </where>
+
+    </select>
+
+
 </mapper>

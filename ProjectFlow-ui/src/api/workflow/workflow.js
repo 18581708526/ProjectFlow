@@ -52,3 +52,16 @@ export function iniProcessSubmit(data) {
     data: data
   })
 }
+
+export function ableProcess(id) {
+  return request({
+    url: '/workflow/workflow/able/' + id,
+    method: 'get'
+  })
+}
+export function disableProcess(id) {
+  return request({
+    url: '/workflow/workflow/disable/' + id,
+    method: 'get'
+  })
+}

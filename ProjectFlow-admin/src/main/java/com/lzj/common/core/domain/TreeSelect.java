@@ -5,6 +5,7 @@ import com.lzj.common.core.domain.entity.SysDept;
 import com.lzj.common.core.domain.entity.SysMenu;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,12 @@ public class TreeSelect implements Serializable
     {
 
     }
-
+    // 构造函数
+    public TreeSelect(Long id, String label) {
+        this.id = id;
+        this.label = label;
+        this.children = new ArrayList<>();
+    }
     public TreeSelect(SysDept dept)
     {
         this.id = dept.getDeptId();

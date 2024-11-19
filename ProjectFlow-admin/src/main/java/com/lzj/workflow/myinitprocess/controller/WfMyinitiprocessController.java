@@ -2,6 +2,8 @@ package com.lzj.workflow.myinitprocess.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.lzj.common.utils.SecurityUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +44,7 @@ public class WfMyinitiprocessController extends BaseController
     public TableDataInfo list(WfMyinitiprocess wfMyinitiprocess)
     {
         startPage();
+        wfMyinitiprocess.setWfInitor(SecurityUtils.getUserId().toString());
         List<WfMyinitiprocess> list = wfMyinitiprocessService.selectWfMyinitiprocessList(wfMyinitiprocess);
         return getDataTable(list);
     }

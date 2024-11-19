@@ -161,7 +161,20 @@ export const dynamicRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
+  },{
+    path: '/design',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'index/:modelId',
+        component: () => import('@/components/BpmnModeler'),
+        name: 'BpmnModeler',
+        meta: { title: '流程设计器', icon: 'design' }
+      }
+    ]
   }
+
 ]
 
 // 防止连续点击多次路由报错
@@ -179,5 +192,5 @@ Router.prototype.replace = function push(location) {
 export default new Router({
   mode: 'history', // 去掉url中的#
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+  routes: constantRoutes.concat(dynamicRoutes)
 })

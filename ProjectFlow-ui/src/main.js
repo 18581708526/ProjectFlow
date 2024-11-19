@@ -39,7 +39,24 @@ import VueMeta from 'vue-meta'
 import DictData from '@/components/DictData'
 // 人员选择组件
 import UserSearch from '@/components/UserSearch'
+import 'element-ui/lib/theme-chalk/index.css'
+//流程图查看组件
+import ProcessViewer from '@/components/ProcessViewer'
+//流程设计器组件
+import BpmnModeler from '@/components/BpmnModeler'
 // 全局方法挂载
+import * as echarts from 'echarts'
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.css'
+
+
+// 以下为bpmn工作流绘图工具的样式
+import 'bpmn-js/dist/assets/diagram-js.css' // 左边工具栏以及编辑节点的样式
+import 'bpmn-js/dist/assets/bpmn-font/css/bpmn.css'
+import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css'
+import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css'
+
+Vue.prototype.echarts = echarts
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
 Vue.prototype.parseTime = parseTime
@@ -49,7 +66,6 @@ Vue.prototype.selectDictLabel = selectDictLabel
 Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
-
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
 Vue.component('Pagination', Pagination)
@@ -59,10 +75,14 @@ Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
 Vue.component('UserSearch', UserSearch)
+Vue.component('ProcessViewer',ProcessViewer)
+Vue.component('BpmnModeler',BpmnModeler)
+
 
 Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
+Vue.use(Antd)
 DictData.install()
 
 /**

@@ -2,6 +2,7 @@ package com.lzj.workflow.common.service;
 
 import java.util.List;
 
+import com.lzj.common.core.domain.AjaxResult;
 import com.lzj.workflow.common.domain.ActReProcdef;
 
 /**
@@ -50,7 +51,7 @@ public interface IActReProcdefService
      * @param ids 需要删除的流程定义主键集合
      * @return 结果
      */
-    public int deleteActReProcdefByIds(String[] ids);
+    public AjaxResult deleteActReProcdefByIds(String[] ids);
 
     /**
      * 删除流程定义信息
@@ -59,4 +60,8 @@ public interface IActReProcdefService
      * @return 结果
      */
     public int deleteActReProcdefById(String id);
+
+    public AjaxResult disableProcess(String processDefinitionId);
+    public AjaxResult ableProcess(String processDefinitionId);
+
 }

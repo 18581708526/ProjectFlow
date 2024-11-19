@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzj.system.mapper.MathDeptAndSysuserMapper">
+
+    <resultMap type="com.lzj.system.domain.dto.MathDeptAndSysuserDto" id="MathDeptAndSysuserDtoResult">
+        <id property="deptId"     column="dept_id"     />
+        <result property="userNum"   column="user_sum"   />
+        <result property="deptName"   column="dept_name"   />
+        <result property="deptMassage"   column="ancestors"   />
+    </resultMap>
+    <select id="mathDeptUserSum" parameterType="com.lzj.system.domain.dto.MathDeptAndSysuserDto" resultMap="MathDeptAndSysuserDtoResult">
+        SELECT
+            COUNT(u.user_id) AS user_sum,
+            COALESCE(dept.dept_id, '-1') AS dept_id,
+            COALESCE(dept.dept_name, '无部门') AS dept_name,
+            COALESCE(dept.ancestors, '-1') AS ancestors
+        FROM
+            sys_user u
+                LEFT JOIN sys_dept dept ON u.dept_id = dept.dept_id
+        GROUP BY
+            dept_id, dept_name, ancestors
+    </select>
+
+</mapper>

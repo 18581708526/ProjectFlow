@@ -175,5 +175,10 @@ public class SecurityUtils
         return roles.stream().filter(StringUtils::hasText)
                 .anyMatch(x -> Constants.SUPER_ADMIN.equals(x) || PatternMatchUtils.simpleMatch(x, role));
     }
+    /**
+     * 根据用户id获取用户名username
+     */
+
+
 
 }

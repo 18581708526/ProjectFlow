@@ -1,4 +1,5 @@
 <template>
+
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="流程名称" prop="wfFwname">
@@ -146,8 +147,6 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-
-
 
     <el-dialog :title="rejecttitle" :visible.sync="rejectopen" width="500px" append-to-body>
       <el-form ref="processVersion" :model="processVersion" label-width="80px">

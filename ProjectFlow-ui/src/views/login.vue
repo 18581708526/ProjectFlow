@@ -56,8 +56,8 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-<!--      <span>Copyright © 2018-2024 ruoyi.vip All Rights Reserved.</span>-->
-          <span>以计划为驱动，以数据为基础构建综合项目管理系统 © 2018-2024</span>
+          <span>Copyright © 2023-2024 liaozijia 以计划为驱动，以数据为基础构建综合项目管理系统</span>
+      <a href="https://beian.miit.gov.cn/" target="_blank" class="beian-link">蜀ICP备2024112641号</a>
     </div>
   </div>
 </template>
@@ -92,7 +92,7 @@ export default {
       // 验证码开关
       captchaEnabled: true,
       // 注册开关
-      register: false,
+      register: true,
       redirect: undefined
     };
   },
@@ -161,7 +161,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 100vh;
   background-image: url("../assets/images/login-background.jpg");
   background-size: cover;
 }
@@ -216,5 +216,15 @@ export default {
 }
 .login-code-img {
   height: 38px;
+}
+.beian-link {
+  color: rgba(255, 255, 255, 0.3); /* 默认状态下半透明 */
+  text-decoration: none; /* 去掉下划线 */
+  margin-left: 10px; /* 根据需要调整间距 */
+
+  &:hover {
+    color: #ffffff; /* 悬停时高亮 */
+    text-decoration: underline; /* 悬停时显示下划线 */
+  }
 }
 </style>

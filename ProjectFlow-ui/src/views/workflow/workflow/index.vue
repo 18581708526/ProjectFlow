@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="70px">
 
-      <el-form-item label="流程类别" prop="category">
+      <el-form-item label="流程KEY" prop="category">
         <el-input
-          v-model="queryParams.category"
-          placeholder="请输入流程类别"
+          v-model="queryParams.key"
+          placeholder="请输入流程KEY"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -18,21 +18,23 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="流程版本号" prop="version">
+      <el-form-item label="版本号" prop="version">
         <el-input
           v-model="queryParams.version"
-          placeholder="请输入流程版本号"
+          placeholder="请输入版本号"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="流程状态" prop="suspensionState">
-        <el-input
-          v-model="queryParams.suspensionState"
-          placeholder="请输入流程状态，1激活2挂起"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.suspensionState" placeholder="请选择流程状态" clearable>
+          <el-option
+            v-for="dict in dict.type.prodef_status"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -41,40 +43,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          disabled="disabled"
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['workflow:workflow:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          disabled="disabled"
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['workflow:workflow:edit']"
-        >修改</el-button>
-      </el-col>
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="danger"-->
-<!--          plain-->
-<!--          icon="el-icon-delete"-->
-<!--          size="mini"-->
-<!--          :disabled="multiple"-->
-<!--          @click="handleDelete"-->
-<!--          v-hasPermi="['workflow:workflow:remove']"-->
-<!--        >删除</el-button>-->
-<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -92,17 +60,21 @@
       <el-table-column type="selection" width="55" align="center" />
 <!--      <el-table-column label="流程定义的唯一标识符" align="center" prop="id" />-->
 <!--      <el-table-column label="记录的版本号，用于乐观锁机制" align="center" prop="rev" />-->
-      <el-table-column label="流程类别" align="center" prop="category" />
+<!--      <el-table-column label="流程类别" align="center" prop="category" />-->
       <el-table-column label="流程名称" align="center" prop="name" />
-<!--      <el-table-column label="流程定义的键，用于唯一标识一个流程模型" align="center" prop="key" />-->
-      <el-table-column label="流程版本号" align="center" prop="version" />
+      <el-table-column label="流程key" align="center" prop="key" />
+      <el-table-column label="版本号" align="center" prop="version" />
 <!--      <el-table-column label="部署的唯一标识符，指向 act_re_deployment 表中的记录" align="center" prop="deploymentId" />-->
-<!--      <el-table-column label="流程定义资源的文件名，通常是 .bpmn20.xml 文件的名称" align="center" prop="resourceName" />-->
+      <el-table-column label="流程资源文件" align="center" prop="resourceName" />
 <!--      <el-table-column label="流程定义资源的文件名，通常是 .bpmn20.xml 文件的名称" align="center" prop="dgrmResourceName" />-->
-<!--      <el-table-column label="流程定义的描述信息" align="center" prop="description" />-->
+      <el-table-column label="流程描述" align="center" prop="description" />
 <!--      <el-table-column label="布尔值，表示该流程定义是否有一个启动表单" align="center" prop="hasStartFormKey" />-->
 <!--      <el-table-column label=" 布尔值，表示该流程定义是否包含图形表示" align="center" prop="hasGraphicalNotation" />-->
-      <el-table-column label="流程状态" align="center" prop="suspensionState" />
+      <el-table-column label="流程状态" align="center" prop="suspensionState">
+        <template slot-scope="scope">
+        <dict-tag :options="dict.type.prodef_status" :value="scope.row.suspensionState"></dict-tag>
+        </template>
+      </el-table-column>
 <!--      <el-table-column label="租户ID，用于多租户环境。" align="center" prop="tenantId" />-->
 <!--      <el-table-column label="引擎版本，表示创建流程定义时使用的Flowable引擎版本" align="center" prop="engineVersion" />-->
 <!--      <el-table-column label="派生自的流程定义ID，用于表示流程定义之间的继承关系" align="center" prop="derivedFrom" />-->
@@ -120,19 +92,43 @@
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-edit"
+            icon="el-icon-tickets"
             @click="iniProcess(scope.row)"
+            v-show="scope.row.suspensionState===1"
             v-hasPermi="['workflow:workflow:iniProcess']"
           >发起流程</el-button>
 
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-error"
+            @click="disableProcess(scope.row)"
+            v-show="scope.row.suspensionState===1"
+            v-hasPermi="['workflow:workflow:iniProcess']"
+          >禁用</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-success"
+            @click="ableProcess(scope.row)"
+            v-show="scope.row.suspensionState===2"
+            v-hasPermi="['workflow:workflow:iniProcess']"
+          >激活</el-button>
+          <el-popover
+            placement="top-start"
+            title="注意"
+            width="20"
+            trigger="hover"
+            content="当改流程定义下无在途流程时方可删除">
+          <el-button
+            slot="reference"
+            size="mini"
+            type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['workflow:workflow:remove']"
-            :disabled="true"
           >删除</el-button>
+          </el-popover>
         </template>
       </el-table-column>
     </el-table>
@@ -235,10 +231,11 @@
 </template>
 
 <script>
-import { listWorkflow, getWorkflow, delWorkflow, addWorkflow, updateWorkflow,iniProcessSubmit } from "@/api/workflow/workflow";
+import { listWorkflow, getWorkflow, delWorkflow, addWorkflow, updateWorkflow,iniProcessSubmit,ableProcess,disableProcess } from "@/api/workflow/workflow";
 
 export default {
   name: "Workflow",
+  dicts: ['prodef_status'],
   data() {
     return {
       //流程表单数据对象
@@ -325,7 +322,7 @@ export default {
   },
   methods: {
     onUserSelected(user) {
-      this.process.approver = user.name;
+      this.process.approver = user.userId;
     },
     /** 查询流程定义列表 */
     getList() {
@@ -407,6 +404,19 @@ export default {
       this.process.key=row.key;
       this.open = true;
     },
+    disableProcess(row){
+      disableProcess(row.id).then(response=>{
+        this.$modal.msgSuccess(response.data.msg);
+        this.getList();
+      })
+
+    },
+    ableProcess(row){
+      ableProcess(row.id).then(response=>{
+        this.$modal.msgSuccess(response.data.msg);
+        this.getList();
+      })
+    },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
@@ -443,7 +453,9 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除流程定义编号为"' + ids + '"的数据项？').then(function() {
+      const name=row.name;
+      const version=row.version;
+      this.$modal.confirm('是否确认删除流程定义版本号为"' + version + '",名称为"'+name+'"的流程定义吗？').then(function() {
         return delWorkflow(ids);
       }).then(() => {
         this.getList();

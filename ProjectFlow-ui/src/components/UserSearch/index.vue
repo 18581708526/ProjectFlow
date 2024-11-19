@@ -19,8 +19,10 @@
         @row-click="selectUser"
         highlight-current-row
       >
-        <el-table-column prop="name" label="人员姓名" width="180"></el-table-column>
-        <el-table-column prop="department" label="人员部门" width="180"></el-table-column>
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column prop="userId" label="人员id"></el-table-column>
+        <el-table-column prop="name" label="人员姓名"></el-table-column>
+        <el-table-column prop="deptName" label="人员部门"></el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
         <el-button @click="showTable = false">取 消</el-button>
@@ -30,7 +32,10 @@
   </div>
 </template>
 
-<script>export default {
+<script>
+import {listtoSersch} from "@/api/system/user";
+
+export default {
   data() {
     return {
       searchQuery: '',
@@ -53,13 +58,14 @@
     },
     fetchUsers() {
       // 假设你有一个 API 可以获取用户列表
-      this.$axios.get('/api/users')
+      listtoSersch()
         .then(response => {
-          this.users = response.data;
+          this.users = response.rows;
+          this.total = response.total;
         })
         .catch(error => {
-          console.error(error);
-        });
+        console.error(error);
+      });
     },
     selectUser(row) {
       this.selectedUser = row;
@@ -70,6 +76,13 @@
         this.searchQuery = this.selectedUser.name;
       }
       this.showTable = false;
+    }
+  },
+  watch: {
+    showTable(val) {
+      if (val) {
+        this.fetchUsers();
+      }
     }
   }
 };

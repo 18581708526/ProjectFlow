@@ -5,6 +5,8 @@ import com.lzj.common.core.domain.AjaxResult;
 import com.lzj.common.exception.DemoModeException;
 import com.lzj.common.exception.ServiceException;
 import com.lzj.common.utils.StringUtils;
+
+import com.lzj.workflow.common.exception.FlowableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
@@ -136,4 +138,16 @@ public class GlobalExceptionHandler
     {
         return AjaxResult.error("演示模式，不允许操作");
     }
+
+    /**
+     * flowable流程设计异常
+     */
+    @ExceptionHandler(FlowableException.class)
+    public AjaxResult handleFlowableException(FlowableException e,HttpServletRequest request)
+    {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',发生Folwable异常 ",requestURI,e);
+        return AjaxResult.error(e.getCode(), e.getMessage());
+    }
+
 }

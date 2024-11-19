@@ -2,6 +2,7 @@ package com.lzj.workflow.common.mapper;
 
 import java.util.List;
 import com.lzj.workflow.common.domain.ActReProcdef;
+import com.lzj.workflow.common.vo.QueryProcessModel;
 
 /**
  * 流程定义Mapper接口
@@ -58,4 +59,5 @@ public interface ActReProcdefMapper
      * @return 结果
      */
     public int deleteActReProcdefByIds(String[] ids);
+    public QueryProcessModel queryProcessModel(String modeId);
 }

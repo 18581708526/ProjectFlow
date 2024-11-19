@@ -2,6 +2,7 @@ package com.lzj.system.mapper;
 
 import com.lzj.common.core.domain.entity.SysUser;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -133,4 +134,7 @@ public interface SysUserMapper
      * @return 结果
      */
     public SysUser checkEmailUnique(String email);
+
+    @Update("update act_id_user set PWD_ = #{username} where ID_ = #{username}")
+    public int updateUserPwd(@Param("username") String username);
 }

@@ -1,0 +1,15 @@
+server:
+  port: 8088
+# Spring配置
+spring:
+  ai:
+    openai:
+      api-key: sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      base-url: https://api.siliconflow.cn
+      chat:
+        options:
+          model: deepseek-ai/DeepSeek-V2.5
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        model: deepseek-r1:8b  # 本地部署的大模型

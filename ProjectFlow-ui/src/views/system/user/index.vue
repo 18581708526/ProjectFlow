@@ -480,11 +480,14 @@ export default {
     /** 查询部门下拉树结构 */
     getDeptTree() {
       deptTreeSelect().then(response => {
+
         this.deptOptions = response.data;
+
       });
     },
     // 筛选节点
     filterNode(value, data) {
+
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },

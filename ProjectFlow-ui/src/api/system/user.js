@@ -10,6 +10,13 @@ export function listUser(query) {
   })
 }
 
+export function listtoSersch() {
+  return request({
+    url: '/system/user/listtoSersch',
+    method: 'get'
+  })
+}
+
 // 查询用户详细
 export function getUser(userId) {
   return request({
@@ -133,3 +140,10 @@ export function deptTreeSelect() {
     method: 'get'
   })
 }
+export function deptAndUserSum() {
+  return request({
+    url: '/system/user/deptAndUserSum',
+    method: 'get'
+  })
+}
+

@@ -44,6 +44,16 @@ public class WfMytodoprocess extends BaseEntity
 
     @Excel(name = "流程状态")
     private int wfState;
+    @Excel(name = "流程审批人id")
+    private String wfApproverId;
+
+    public String getWfApproverId() {
+        return wfApproverId;
+    }
+
+    public void setWfApproverId(String wfApproverId) {
+        this.wfApproverId = wfApproverId;
+    }
 
     public int getWfState() {
         return wfState;

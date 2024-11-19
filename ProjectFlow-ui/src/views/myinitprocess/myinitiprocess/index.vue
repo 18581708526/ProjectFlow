@@ -130,8 +130,9 @@
             type="text"
             icon="el-icon-view"
             @click="viewdiagram(scope.row)"
+            v-show="scope.row.wfState===0"
            v-hasPermi="['myinitprocess:myinitiprocess:edit']"
-          >流程跟踪</el-button>
+          ></el-button>
           <el-button
             size="mini"
             type="text"
@@ -175,6 +176,8 @@
 <!--        <el-button @click="cancel">取 消</el-button>-->
 <!--      </div>-->
     </el-dialog>
+
+      <ProcessDiagramWindow v-if="isShow" ref="ProcessDiagramWindow" />
   </div>
 </template>
 
@@ -190,12 +193,17 @@ import {
 } from "@/api/myinitprocess/myinitiprocess";
 import axios from "axios";
 import {getToken} from "@/utils/auth";
-
+import ProcessDiagramWindow from "@/components/ProcessDiagramWindow/index.vue";
 export default {
   name: "Myinitiprocess",
   dicts: ['bus_appstate'],
+  components:{
+    ProcessDiagramWindow
+  },
   data() {
     return {
+      isLoading:true,
+      isShow:false,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -310,9 +318,8 @@ export default {
       this.fetchProcessDiagram(taskId);
     },
     fetchProcessDiagram(taskId) {
-      const url = `http://localhost/dev-api/leaveProcess/processDiagram/${taskId}`;
+      const url = 'http://'+ process.env.VUE_APP_FLOWABLE_IP+':'+process.env.VUE_APP_FLOWABLE_HOST+''+process.env.VUE_APP_BASE_API+'/leaveProcess/processDiagram/'+taskId;
       const token = getToken();
-
       axios.get(url, {
         responseType: 'blob',
         headers: {
@@ -322,22 +329,19 @@ export default {
         .then(response => {
           const blob = new Blob([response.data], { type: 'image/png' });
           const url = URL.createObjectURL(blob);
-          this.showProcessDiagram(url);
+          this.$nextTick(()=>{
+            this.showProcessDiagram(url);
+          })
         })
         .catch(error => {
-          console.error('获取流程图失败:', error);
-        });
+          this.$modal.msgError('获取流程图失败:'+error);
+        })
     },
     showProcessDiagram(url) {
-      this.$alert(`<img src="${url}" alt="流程图" class="process-diagram">`, '流程图', {
-        dangerouslyUseHTMLString: true,
-        showConfirmButton: false,
-        showClose: true,
-        customClass: 'process-dialog' // 应用自定义样式类
-      });
+      this.isShow=true;
+      this.$refs.ProcessDiagramWindow.open(url);
     },
     /** 查看驳回原因*/
-
     viewRejectRs(row){
       this.open = true;
         const taskId=row.wfTaskid;
@@ -384,13 +388,12 @@ export default {
   }
 };
 </script>
-<style scoped>.process-diagram {
+<style scoped>
+.process-diagram {
   width: 100%;
   max-width: 600px;
   height: auto;
   display: block;
   margin: 0 auto;
 }
-
-
 </style>

@@ -9,12 +9,16 @@ import com.lzj.common.utils.SecurityUtils;
 import com.lzj.common.utils.StringUtils;
 import com.lzj.common.utils.bean.BeanValidators;
 import com.lzj.common.utils.spring.SpringUtils;
+import com.lzj.system.constant.UserTypeConstant;
 import com.lzj.system.domain.SysPost;
 import com.lzj.system.domain.SysUserPost;
 import com.lzj.system.domain.SysUserRole;
 import com.lzj.system.mapper.*;
 import com.lzj.system.service.ISysConfigService;
 import com.lzj.system.service.ISysUserService;
+import org.flowable.engine.IdentityService;
+import org.flowable.engine.ProcessEngine;
+import org.flowable.idm.api.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +61,9 @@ public class SysUserServiceImpl implements ISysUserService
 
     @Autowired
     protected Validator validator;
+
+    @Autowired
+    private IdentityService identityService;
 
     /**
      * 根据条件分页查询用户列表
@@ -442,6 +449,7 @@ public class SysUserServiceImpl implements ISysUserService
         userRoleMapper.deleteUserRoleByUserId(userId);
         // 删除用户与岗位表
         userPostMapper.deleteUserPostByUserId(userId);
+        identityService.deleteUser(userMapper.selectUserById(userId).getUserName());
         return userMapper.deleteUserById(userId);
     }
 
@@ -459,6 +467,7 @@ public class SysUserServiceImpl implements ISysUserService
         {
             checkUserAllowed(new SysUser(userId));
             checkUserDataScope(userId);
+            identityService.deleteUser(userMapper.selectUserById(userId).getUserName());
         }
         // 删除用户与角色关联
         userRoleMapper.deleteUserRole(userIds);
@@ -538,4 +547,27 @@ public class SysUserServiceImpl implements ISysUserService
         }
         return successMsg.toString();
     }
+
+    @Override
+    public void syncUsertoFlowableuI(String username) {
+            this.addUserFlowableuI(username);
+
+    }
+    @Override
+    public void syncUserstoFlowableuI(List<String> usernames) {
+            for (String username : usernames){
+                this.addUserFlowableuI(username);
+            }
+    }
+    public void addUserFlowableuI(String username){
+        User user = identityService.newUser(username);
+        user.setFirstName(username);
+        user.setLastName(username);
+        user.setPassword(username);
+        identityService.saveUser(user);
+        userMapper.updateUserPwd(username);
+        identityService.createMembership(username, UserTypeConstant.COMMON_USER);
+        log.info("用户:{} 同步到flowableuI成功",username);
+    }
+
 }

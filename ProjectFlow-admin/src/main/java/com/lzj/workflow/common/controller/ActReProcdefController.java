@@ -3,7 +3,12 @@ package com.lzj.workflow.common.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.lzj.common.utils.SecurityUtils;
 import com.lzj.workflow.common.domain.ActReProcdef;
+import com.lzj.workflow.common.util.FlowableUiTokenUtil;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -100,6 +105,30 @@ public class ActReProcdefController extends BaseController
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable String[] ids)
     {
-        return toAjax(actReProcdefService.deleteActReProcdefByIds(ids));
+        return actReProcdefService.deleteActReProcdefByIds(ids);
     }
+
+
+    @PreAuthorize("@ss.hasPermi('workflow:workflow:remove')")
+    @GetMapping("/disable/{processDefinitionId}")
+    public AjaxResult disableProcess(@PathVariable String processDefinitionId)
+    {
+        return success(actReProcdefService.disableProcess(processDefinitionId));
+    }
+
+    @PreAuthorize("@ss.hasPermi('workflow:workflow:remove')")
+    @GetMapping("/able/{processDefinitionId}")
+    public AjaxResult ableProcess(@PathVariable String processDefinitionId)
+    {
+        return success(actReProcdefService.ableProcess(processDefinitionId));
+    }
+    @GetMapping("/designProcess")
+    public ResponseEntity designProcess()
+    {
+        HttpHeaders headers = FlowableUiTokenUtil.GetToken(SecurityUtils.getUsername());
+        return new ResponseEntity<>(headers, HttpStatus.OK);
+    }
+
+
+
 }

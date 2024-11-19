@@ -11,9 +11,10 @@
         <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[ false ]]></modeler:initiator-can-complete>
       </extensionElements>
     </userTask>
+
     <exclusiveGateway id="managerJudgeTask"/>
     <endEvent id="endLeave" name="结束"/>
-    <startEvent id="startLeave" name="开始" flowable:initiator="${fq_user}" flowable:formFieldValidation="true"/>
+    <startEvent id="startLeave" name="开始" flowable:assignee="${fq_user}" flowable:formFieldValidation="true"/>
     <sequenceFlow id="modeFlow" sourceRef="leaveTask" targetRef="managerTask"/>
     <sequenceFlow id="flowStart" sourceRef="startLeave" targetRef="leaveTask"/>
     <sequenceFlow id="jugdeFlow" sourceRef="managerTask" targetRef="managerJudgeTask"/>
@@ -25,6 +26,8 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[ ${checkResult=='驳回'} ]]></conditionExpression>
     </sequenceFlow>
   </process>
+
+
   <bpmndi:BPMNDiagram id="BPMNDiagram_LeaveProcess">
     <bpmndi:BPMNPlane bpmnElement="LeaveProcess" id="BPMNPlane_LeaveProcess">
       <bpmndi:BPMNShape bpmnElement="leaveTask" id="BPMNShape_leaveTask">
@@ -68,3 +71,28 @@
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </definitions>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

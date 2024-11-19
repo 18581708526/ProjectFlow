@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lzj.workflow.mytodoprocess.mapper.WfMytodoprocessMapper">
 
-    <resultMap type="WfMytodoprocess" id="WfMytodoprocessResult">
+    <resultMap type="com.lzj.workflow.mytodoprocess.domain.WfMytodoprocess" id="WfMytodoprocessResult">
         <result property="wfFwid"    column="wf_fwid"    />
         <result property="wfFwname"    column="wf_fwname"    />
         <result property="wfInitatorId"    column="wf_initator_id"    />
@@ -12,19 +12,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="wfTaskid"    column="wf_taskid"    />
         <result property="wfBussiskey"    column="wf_bussiskey"    />
         <result property="wfInitatorName"    column="wf_initator_name"    />
+        <result property="wfApproverId"    column="wf_approver_id"    />
     </resultMap>
 
     <sql id="selectWfMytodoprocessVo">
         select wf_fwid, wf_fwname, wf_initator_id, wf_starttime, wf_taskid, wf_bussiskey, wf_initator_name from wf_mytodoprocess
     </sql>
 
-    <select id="selectWfMytodoprocessList" parameterType="WfMytodoprocess" resultMap="WfMytodoprocessResult">
+    <select id="selectWfMytodoprocessList" parameterType="com.lzj.workflow.mytodoprocess.domain.WfMytodoprocess" resultMap="WfMytodoprocessResult">
         <include refid="selectWfMytodoprocessVo"/>
         <where>
             <if test="wfFwname != null  and wfFwname != ''"> and wf_fwname like concat('%', #{wfFwname}, '%')</if>
             <if test="wfStarttime != null "> and wf_starttime = #{wfStarttime}</if>
+            <if test="wfApproverId != null "> and wf_approver_id = #{wfApproverId} and wf_state is null</if>
             <if test="wfInitatorName != null  and wfInitatorName != ''"> and wf_initator_name like concat('%', #{wfInitatorName}, '%')</if>
-            wf_state is null
         </where>
     </select>
 
@@ -39,7 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
 
-    <insert id="insertWfMytodoprocess" parameterType="WfMytodoprocess" useGeneratedKeys="true" keyProperty="wfFwid">
+    <insert id="insertWfMytodoprocess" parameterType="com.lzj.workflow.mytodoprocess.domain.WfMytodoprocess" useGeneratedKeys="true" keyProperty="wfFwid">
         insert into wf_mytodoprocess
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="wfFwname != null">wf_fwname,</if>
@@ -48,6 +49,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="wfTaskid != null">wf_taskid,</if>
             <if test="wfBussiskey != null">wf_bussiskey,</if>
             <if test="wfInitatorName != null">wf_initator_name,</if>
+            <if test="wfApproverId != null">wf_approver_id,</if>
+
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="wfFwname != null">#{wfFwname},</if>
@@ -56,10 +59,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="wfTaskid != null">#{wfTaskid},</if>
             <if test="wfBussiskey != null">#{wfBussiskey},</if>
             <if test="wfInitatorName != null">#{wfInitatorName},</if>
+            <if test="wfApproverId != null">#{wfApproverId},</if>
          </trim>
     </insert>
 
-    <update id="updateWfMytodoprocess" parameterType="WfMytodoprocess">
+    <update id="updateWfMytodoprocess" parameterType="com.lzj.workflow.mytodoprocess.domain.WfMytodoprocess">
         update wf_mytodoprocess
         <trim prefix="SET" suffixOverrides=",">
             <if test="wfFwname != null">wf_fwname = #{wfFwname},</if>

@@ -1,7 +1,11 @@
 package com.lzj.workflow.common.config;
 
+import org.flowable.bpmn.converter.BpmnXMLConverter;
+
 import org.flowable.spring.SpringProcessEngineConfiguration;
 import org.flowable.spring.boot.EngineConfigurationConfigurer;
+
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
