@@ -58,4 +58,6 @@ public interface IWfMyinitiprocessService
      * @return 结果
      */
     public int deleteWfMyinitiprocessByWfWfid(Long wfWfid);
+    public String selectRejectRstoProcess(String wfTaskId);
+
 }

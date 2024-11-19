@@ -221,6 +221,9 @@
         <el-form-item v-show="false" label="流程key" prop="key">
           <el-input v-model="process.key"/>
         </el-form-item>
+        <el-form-item label="审批人" prop="approver">
+          <UserSearch v-model="process.approver" @user-selected="onUserSelected" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="iniProcesssubmitForm(process)">确 定</el-button>
@@ -243,12 +246,14 @@ export default {
         name:"", //学生姓名
         day:"", //请假天数
         reason:"",//请假原因
-        key:""
+        key:"",
+        approver:""
       },
       // 遮罩层
       loading: true,
       // 选中数组
       ids: [],
+      users:[],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -319,6 +324,9 @@ export default {
     this.getList();
   },
   methods: {
+    onUserSelected(user) {
+      this.process.approver = user.name;
+    },
     /** 查询流程定义列表 */
     getList() {
       this.loading = true;

@@ -10,6 +10,8 @@ import com.lzj.workflow.myinitprocess.domain.WfMyinitiprocess;
 import com.lzj.workflow.myinitprocess.mapper.WfMyinitiprocessMapper;
 import com.lzj.workflow.mytodoprocess.domain.WfMytodoprocess;
 import com.lzj.workflow.mytodoprocess.mapper.WfMytodoprocessMapper;
+import com.lzj.workflow.mytodoprocess.menu.WorkFlowState;
+import com.lzj.workflow.mytodoprocess.vo.RejectVo;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.common.engine.impl.identity.Authentication;
@@ -22,6 +24,7 @@ import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.image.ProcessDiagramGenerator;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +34,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.lzj.common.core.domain.AjaxResult.success;
+import static com.lzj.workflow.mytodoprocess.menu.WorkFlowState.*;
 
 @RestController
 @RequestMapping("/leaveProcess")
@@ -200,7 +204,7 @@ public class LeaveProcessController {
         return success("获取成功",map);
     }
     /**
-     * 经理批准
+     * 辅导员批准
      * @param taskId
      */
     @GetMapping("teacherApply/{taskId}")
@@ -217,8 +221,7 @@ public class LeaveProcessController {
         map.put("checkResult", "通过");
         taskService.complete(task.getId(), map);
         // 在这儿写审批通过后回写已办数据
-        wfMytodoprocessMapper.updateWfdodeProess(taskId);
-        wfMyinitiprocessMapper.updateWfdodeProess(taskId);
+        this.passProcessUpdate(taskId);
 
         return success( "审批成功", new TaskVO(task.getId(), task.getName(), task.getDescription()));
     }
@@ -226,12 +229,13 @@ public class LeaveProcessController {
     /**
      * 辅导员拒绝
      *
-     * @param taskId 任务ID，非流程id
+     * @param rejectVo 拒绝对象
      */
-    @GetMapping("teacherReject/{taskId}")
-    public AjaxResult teacherReject(@PathVariable("taskId") String taskId) {
-        Task task = taskService.createTaskQuery().taskCandidateGroup("jysh").taskId(taskId).singleResult();
-        //Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+
+    @PostMapping("teacherReject")
+    public AjaxResult teacherReject(@RequestBody RejectVo rejectVo) {
+        String userId = SecurityUtils.getUserId().toString();
+        Task task = taskService.createTaskQuery().taskCandidateOrAssigned(userId).taskId(rejectVo.getTaskId()).singleResult();
         if (task == null) {
             return success("没有任务");
         }
@@ -239,7 +243,9 @@ public class LeaveProcessController {
         HashMap<String, Object> map = new HashMap<>();
         map.put("checkResult", "驳回");
         taskService.complete(task.getId(), map);
-        return success("审批失败",task);
+        //更新流程发起数据
+        this.rejectProcessUpdate(rejectVo);
+        return success("审批成功",new TaskVO(task.getId(), task.getName(), task.getDescription()));
     }
 
     /**
@@ -453,6 +459,26 @@ public class LeaveProcessController {
                 wfMytodoprocessMapper.insertWfMytodoprocess(builder);
             }
         }
+    }
+    public void passProcessUpdate(String taskId) {
+        updateProcess(taskId, APPROVED.getValue(), null,PENDING.getValue());
+    }
+    public void rejectProcessUpdate(RejectVo rejectVo) {
+        updateProcess(rejectVo.getTaskId(), REJECTED.getValue(), rejectVo.getReason().toString(), APPROVED.getValue());
+    }
+    private void updateProcess(String taskId, int initiprocessState, String rejectReason, int todoprocessState) {
+        WfMyinitiprocess wfMyinitiprocess = new WfMyinitiprocess();
+        wfMyinitiprocess.setWfTaskid(taskId);
+        wfMyinitiprocess.setWfState(initiprocessState);
+        if (rejectReason != null) {
+            wfMyinitiprocess.setWfRejectrs(rejectReason);
+        }
+        wfMyinitiprocess.setWfApprtime(new Date());
+        wfMyinitiprocessMapper.updateWfMyinitiprocess(wfMyinitiprocess);
+        WfMytodoprocess wfMytodoprocess = new WfMytodoprocess();
+        wfMytodoprocess.setWfTaskid(taskId);
+        wfMytodoprocess.setWfState(todoprocessState);
+        wfMytodoprocessMapper.updateWfMytodoprocess(wfMytodoprocess);
     }
 
 }

@@ -98,4 +98,9 @@ public class WfMyinitiprocessServiceImpl implements IWfMyinitiprocessService
     {
         return wfMyinitiprocessMapper.deleteWfMyinitiprocessByWfWfid(wfWfid);
     }
+
+    @Override
+    public String selectRejectRstoProcess(String wfTaskId) {
+        return wfMyinitiprocessMapper.selectRejectRstoProcess(wfTaskId);
+    }
 }

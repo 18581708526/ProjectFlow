@@ -1,5 +1,6 @@
 package com.lzj.workflow.myinitprocess.domain;
 
+import java.sql.Blob;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -45,6 +46,17 @@ public class WfMyinitiprocess extends BaseEntity
     private Date wfApprtime;
     @Excel(name = "流程发起人")
     private String wfInitor;
+
+    @Excel(name = "流程驳回原因")
+    private String wfRejectrs;
+
+    public String getWfRejectrs() {
+        return wfRejectrs;
+    }
+
+    public void setWfRejectrs(String wfRejectrs) {
+        this.wfRejectrs = wfRejectrs;
+    }
 
     public void setWfWfid(Long wfWfid)
     {

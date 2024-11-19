@@ -2,6 +2,7 @@ package com.lzj.workflow.mytodoprocess.mapper;
 
 import java.util.List;
 import com.lzj.workflow.mytodoprocess.domain.WfMytodoprocess;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 我的待办Mapper接口
@@ -42,7 +43,6 @@ public interface WfMytodoprocessMapper
      * @return 结果
      */
     public int updateWfMytodoprocess(WfMytodoprocess wfMytodoprocess);
-    public void updateWfdodeProess(String taskid);
 
 
     /**

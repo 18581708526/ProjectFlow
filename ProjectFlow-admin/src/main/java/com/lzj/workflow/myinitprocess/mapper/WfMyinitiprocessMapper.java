@@ -2,6 +2,8 @@ package com.lzj.workflow.myinitprocess.mapper;
 
 import java.util.List;
 import com.lzj.workflow.myinitprocess.domain.WfMyinitiprocess;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * 我的发起Mapper接口
@@ -42,8 +44,6 @@ public interface WfMyinitiprocessMapper
      * @return 结果
      */
     public int updateWfMyinitiprocess(WfMyinitiprocess wfMyinitiprocess);
-    public void updateWfdodeProess(String Taskid);
-
     /**
      * 删除我的发起
      *
@@ -59,4 +59,6 @@ public interface WfMyinitiprocessMapper
      * @return 结果
      */
     public int deleteWfMyinitiprocessByWfWfids(Long[] wfWfids);
+    public String selectRejectRstoProcess(String wfWfid);
+
 }

@@ -65,20 +65,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="wfFwname != null">wf_fwname = #{wfFwname},</if>
             <if test="wfInitatorId != null">wf_initator_id = #{wfInitatorId},</if>
             <if test="wfStarttime != null">wf_starttime = #{wfStarttime},</if>
-            <if test="wfTaskid != null">wf_taskid = #{wfTaskid},</if>
             <if test="wfBussiskey != null">wf_bussiskey = #{wfBussiskey},</if>
             <if test="wfInitatorName != null">wf_initator_name = #{wfInitatorName},</if>
-        </trim>
-        where wf_fwid = #{wfFwid}
-    </update>
-    <!--审批通过后回写流程审批状态-->
-    <update id="updateWfdodeProess">
-        update wf_mytodoprocess
-        <trim prefix="SET" suffixOverrides=",">
-            <if test="wfState != null">wf_state = 1,</if>
+            <if test="wfState != null">wf_state = #{wfState},</if>
         </trim>
         where wf_taskid = #{wfTaskid}
     </update>
+
 
     <delete id="deleteWfMytodoprocessByWfFwid" parameterType="Long">
         delete from wf_mytodoprocess where wf_fwid = #{wfFwid}

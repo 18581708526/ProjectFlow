@@ -32,38 +32,38 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['mytodoprocess:mytodoprocess:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['mytodoprocess:mytodoprocess:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['mytodoprocess:mytodoprocess:remove']"
-        >删除</el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="primary"-->
+<!--          plain-->
+<!--          icon="el-icon-plus"-->
+<!--          size="mini"-->
+<!--          @click="handleAdd"-->
+<!--          v-hasPermi="['mytodoprocess:mytodoprocess:add']"-->
+<!--        >新增</el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          icon="el-icon-edit"-->
+<!--          size="mini"-->
+<!--          :disabled="single"-->
+<!--          @click="handleUpdate"-->
+<!--          v-hasPermi="['mytodoprocess:mytodoprocess:edit']"-->
+<!--        >修改</el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="danger"-->
+<!--          plain-->
+<!--          icon="el-icon-delete"-->
+<!--          size="mini"-->
+<!--          :disabled="multiple"-->
+<!--          @click="handleDelete"-->
+<!--          v-hasPermi="['mytodoprocess:mytodoprocess:remove']"-->
+<!--        >删除</el-button>-->
+<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -93,25 +93,25 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['mytodoprocess:mytodoprocess:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
             @click="handProcess(scope.row)"
             v-hasPermi="['mytodoprocess:mytodoprocess:edit']"
           >审批</el-button>
 
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            :disabled="true"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['mytodoprocess:mytodoprocess:remove']"
-          >删除</el-button>
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-edit"-->
+<!--            @click="handleUpdate(scope.row)"-->
+<!--            v-hasPermi="['mytodoprocess:mytodoprocess:edit']"-->
+<!--          >修改</el-button>-->
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-delete"-->
+<!--            :disabled="true"-->
+<!--            @click="handleDelete(scope.row)"-->
+<!--            v-hasPermi="['mytodoprocess:mytodoprocess:remove']"-->
+<!--          >删除</el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -142,7 +142,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="success" @click="ProcessForm">通 过</el-button>
-        <el-button type="danger" @click="rejectForm">驳 回</el-button>
+        <el-button type="danger" @click="rejectFormclick">驳 回</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -152,8 +152,9 @@
     <el-dialog :title="rejecttitle" :visible.sync="rejectopen" width="500px" append-to-body>
       <el-form ref="processVersion" :model="processVersion" label-width="80px">
         <el-form-item label="驳回原因" prop="leaveTask">
-          <el-input v-model="processVersion.rejectReason" placeholder="请输入驳回原因" />
+          <editor required v-model="processVersion.rejectReason" placeholder="请输入驳回原因" :min-height="192" />
         </el-form-item>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="danger" @click="rejectSubm">确定驳回</el-button>
@@ -165,7 +166,7 @@
 </template>
 
 <script>
-import { listMytodoprocess, getMytodoprocess, delMytodoprocess, Provedprocess,getProcessVaryies} from "@/api/mytodoprocess/mytodoprocess";
+import { listMytodoprocess, getMytodoprocess, delMytodoprocess, Provedprocess,getProcessVaryies,Rejectprocess} from "@/api/mytodoprocess/mytodoprocess";
 
 export default {
   name: "Mytodoprocess",
@@ -210,6 +211,10 @@ export default {
         leaveTask:null,
         rejectReason:null,
         wfTaskid:null
+      },
+      rejectForm:{
+        reason:null,
+        taskId:null
       }
     };
   },
@@ -291,10 +296,6 @@ export default {
     },
 
 
-
-
-
-
     /** 提交按钮 */
     ProcessForm() {
         Provedprocess(this.processVersion.wfTaskid).then(response => {
@@ -304,13 +305,20 @@ export default {
         });
     },
     /**驳回按钮，需要输入驳回原因*/
-    rejectForm(){
+    rejectFormclick(){
       this.rejectopen=true;
       this.rejecttitle = "请填写驳回原因";
     },
     /**确认驳回操作*/
     rejectSubm(){
-      console.log(this.processVersion.wfTaskid);
+       this.rejectForm.reason=this.processVersion.rejectReason;
+       this.rejectForm.taskId=this.processVersion.wfTaskid;
+        Rejectprocess(this.rejectForm).then(response => {
+          this.$modal.msgSuccess("审批成功");
+          this.rejectopen = false;
+          this.open = false;
+          this.getList();
+      });
     },
     /** 删除按钮操作 */
     handleDelete(row) {

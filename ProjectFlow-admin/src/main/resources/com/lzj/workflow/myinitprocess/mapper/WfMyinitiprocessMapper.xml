@@ -12,10 +12,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="wfStarttime"    column="wf_starttime"    />
         <result property="wfState"    column="wf_state"    />
         <result property="wfApprtime"    column="wf_apprtime"    />
+        <result property="wfRejectrs"    column="wf_rejectrs"    />
     </resultMap>
 
     <sql id="selectWfMyinitiprocessVo">
-        select wf_wfid, wf_taskid, wf_wfname, wf_businesskey, wf_starttime, wf_state, wf_apprtime from wf_myinitiprocess
+        select wf_wfid, wf_taskid, wf_wfname, wf_businesskey, wf_starttime, wf_state, wf_apprtime,wf_rejectrs from wf_myinitiprocess
+    </sql>
+    <sql id="selectRejectprocessVo">
+        select wf_rejectrs from wf_myinitiprocess
     </sql>
 
     <select id="selectWfMyinitiprocessList" parameterType="WfMyinitiprocess" resultMap="WfMyinitiprocessResult">
@@ -40,7 +44,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where wf_taskid = #{wfTaskid}
     </select>
 
-
+    <select id="selectRejectRstoProcess" parameterType="String" resultType="String">
+        <include refid="selectRejectprocessVo"/>
+        where wf_taskid = #{wfTaskid}
+    </select>
 
     <insert id="insertWfMyinitiprocess" parameterType="WfMyinitiprocess" useGeneratedKeys="true" keyProperty="wfWfid">
         insert into wf_myinitiprocess
@@ -64,28 +71,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateWfMyinitiprocess" parameterType="WfMyinitiprocess">
+    <update id="updateWfMyinitiprocess" parameterType="com.lzj.workflow.myinitprocess.domain.WfMyinitiprocess">
         update wf_myinitiprocess
         <trim prefix="SET" suffixOverrides=",">
-            <if test="wfTaskid != null and wfTaskid != ''">wf_taskid = #{wfTaskid},</if>
             <if test="wfWfname != null">wf_wfname = #{wfWfname},</if>
             <if test="wfBusinesskey != null">wf_businesskey = #{wfBusinesskey},</if>
             <if test="wfStarttime != null">wf_starttime = #{wfStarttime},</if>
             <if test="wfState != null">wf_state = #{wfState},</if>
             <if test="wfApprtime != null">wf_apprtime = #{wfApprtime},</if>
-        </trim>
-        where wf_wfid = #{wfWfid}
-    </update>
-
-    <!--审批通过后回写流程审批状态-->
-    <update id="updateWfdodeProess">
-        update wf_myinitiprocess
-        <trim prefix="SET" suffixOverrides=",">
-            <if test="wfState != null">wf_state = 1,</if>
+            <if test="wfRejectrs != null">wf_rejectrs = #{wfRejectrs},</if>
         </trim>
         where wf_taskid = #{wfTaskid}
     </update>
-
 
     <delete id="deleteWfMyinitiprocessByWfWfid" parameterType="Long">
         delete from wf_myinitiprocess where wf_wfid = #{wfWfid}

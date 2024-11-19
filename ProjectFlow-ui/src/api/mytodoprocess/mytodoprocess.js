@@ -57,3 +57,12 @@ export function Provedprocess(wfTaskid) {
     method: 'get'
   })
 }
+
+
+export function Rejectprocess(data) {
+  return request({
+    url: '/leaveProcess/teacherReject',
+    method: 'post',
+    data: data
+  })
+}

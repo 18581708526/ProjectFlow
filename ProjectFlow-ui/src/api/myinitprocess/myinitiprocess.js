@@ -42,6 +42,14 @@ export function delMyinitiprocess(wfWfid) {
     method: 'delete'
   })
 }
+//查看驳回原因
+export function viewrejectrs(wfWfid) {
+  return request({
+    url: '/myinitprocess/myinitiprocess/viewrejectrs/' + wfWfid,
+    method: 'get'
+  })
+}
+
 export function Toviewdiagram(taskid) {
   return request({
     url: '/leaveProcess/processDiagram/' + taskid,

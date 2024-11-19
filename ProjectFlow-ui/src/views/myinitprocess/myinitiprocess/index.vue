@@ -42,38 +42,38 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['myinitprocess:myinitiprocess:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['myinitprocess:myinitiprocess:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['myinitprocess:myinitiprocess:remove']"
-        >删除</el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="primary"-->
+<!--          plain-->
+<!--          icon="el-icon-plus"-->
+<!--          size="mini"-->
+<!--          @click="handleAdd"-->
+<!--          v-hasPermi="['myinitprocess:myinitiprocess:add']"-->
+<!--        >新增</el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          icon="el-icon-edit"-->
+<!--          size="mini"-->
+<!--          :disabled="single"-->
+<!--          @click="handleUpdate"-->
+<!--          v-hasPermi="['myinitprocess:myinitiprocess:edit']"-->
+<!--        >修改</el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="danger"-->
+<!--          plain-->
+<!--          icon="el-icon-delete"-->
+<!--          size="mini"-->
+<!--          :disabled="multiple"-->
+<!--          @click="handleDelete"-->
+<!--          v-hasPermi="['myinitprocess:myinitiprocess:remove']"-->
+<!--        >删除</el-button>-->
+<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -98,7 +98,17 @@
       </el-table-column>
       <el-table-column label="流程状态" align="center" prop="wfState">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.bus_appstate" :value="scope.row.wfState"/>
+          <el-popover
+            placement="top-start"
+            title="驳回原因："
+            width="200"
+            trigger="hover"
+            v-if="scope.row.wfState === 2"
+          >
+          <div v-html="scope.row.wfRejectrs"></div>
+          <dict-tag slot="reference" :options="dict.type.bus_appstate" :value="scope.row.wfState"></dict-tag>
+          </el-popover>
+          <dict-tag v-else :options="dict.type.bus_appstate" :value="scope.row.wfState"></dict-tag>
         </template>
       </el-table-column>
       <el-table-column label="审批时间" align="center" prop="wfApprtime" width="180">
@@ -108,13 +118,13 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['myinitprocess:myinitiprocess:edit']"
-          >修改</el-button>
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-edit"-->
+<!--            @click="handleUpdate(scope.row)"-->
+<!--            v-hasPermi="['myinitprocess:myinitiprocess:edit']"-->
+<!--          >修改</el-button>-->
           <el-button
             size="mini"
             type="text"
@@ -122,9 +132,14 @@
             @click="viewdiagram(scope.row)"
            v-hasPermi="['myinitprocess:myinitiprocess:edit']"
           >流程跟踪</el-button>
-
-
-
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click="viewRejectRs(scope.row)"
+            v-show="scope.row.wfState===2"
+            v-hasPermi="['myinitprocess:myinitiprocess:edit']"
+          >查看驳回原因</el-button>
           <el-button
             size="mini"
             type="text"
@@ -147,18 +162,32 @@
 
     <!-- 添加或修改我的发起对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="processVersion" :model="processView" label-width="80px">
+        <el-form-item label="驳回原因:" prop="leaveTask">
+          <span>
+            <div v-html="processView.rejectReason"></div>
+          </span>
+<!--         <editor required v-model="processView.rejectReason" :min-height="192" />-->
+        </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
+<!--      <div slot="footer" class="dialog-footer">-->
+<!--        <el-button type="primary" @click="submitForm">确 定</el-button>-->
+<!--        <el-button @click="cancel">取 消</el-button>-->
+<!--      </div>-->
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { listMyinitiprocess, getMyinitiprocess, delMyinitiprocess, addMyinitiprocess, updateMyinitiprocess ,Toviewdiagram} from "@/api/myinitprocess/myinitiprocess";
+import {
+  listMyinitiprocess,
+  getMyinitiprocess,
+  delMyinitiprocess,
+  addMyinitiprocess,
+  updateMyinitiprocess,
+  Toviewdiagram,
+  viewrejectrs
+} from "@/api/myinitprocess/myinitiprocess";
 import axios from "axios";
 import {getToken} from "@/utils/auth";
 
@@ -193,10 +222,14 @@ export default {
         wfTaskid: null,
         wfStarttime: null,
         wfState: null,
-        wfApprtime: null
+        wfApprtime: null,
+        wfRejectrs:null
       },
       // 表单参数
       form: {},
+      processView:{
+        rejectReason:null
+      },
       // 表单校验
       rules: {
         wfTaskid: [
@@ -299,10 +332,19 @@ export default {
       this.$alert(`<img src="${url}" alt="流程图" class="process-diagram">`, '流程图', {
         dangerouslyUseHTMLString: true,
         showConfirmButton: false,
-        showClose: true
+        showClose: true,
+        customClass: 'process-dialog' // 应用自定义样式类
       });
     },
+    /** 查看驳回原因*/
 
+    viewRejectRs(row){
+      this.open = true;
+        const taskId=row.wfTaskid;
+        viewrejectrs(taskId).then(response=>{
+          this.processView.rejectReason=response.msg;
+        });
+    },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
@@ -349,5 +391,6 @@ export default {
   display: block;
   margin: 0 auto;
 }
+
 
 </style>

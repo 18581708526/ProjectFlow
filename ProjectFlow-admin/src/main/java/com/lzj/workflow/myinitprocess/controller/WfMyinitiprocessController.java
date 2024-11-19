@@ -101,4 +101,14 @@ public class WfMyinitiprocessController extends BaseController
     {
         return toAjax(wfMyinitiprocessService.deleteWfMyinitiprocessByWfWfids(wfWfids));
     }
+    /**
+     * 获取我的发起详细信息
+     */
+    @PreAuthorize("@ss.hasPermi('myinitprocess:myinitiprocess:query')")
+    @GetMapping(value = "viewrejectrs/{wfWfid}")
+    public AjaxResult viewrejectrs(@PathVariable("wfWfid") String wfWfid)
+    {
+        return success(wfMyinitiprocessService.selectRejectRstoProcess(wfWfid));
+    }
+
 }

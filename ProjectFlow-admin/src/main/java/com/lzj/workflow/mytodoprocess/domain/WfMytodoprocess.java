@@ -42,6 +42,17 @@ public class WfMytodoprocess extends BaseEntity
     @Excel(name = "发起人")
     private String wfInitatorName;
 
+    @Excel(name = "流程状态")
+    private int wfState;
+
+    public int getWfState() {
+        return wfState;
+    }
+
+    public void setWfState(int wfState) {
+        this.wfState = wfState;
+    }
+
     public void setWfFwid(Long wfFwid)
     {
         this.wfFwid = wfFwid;
